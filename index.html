@@ -101,7 +101,7 @@
                 <a href="#" onclick="startConsulting('pg'); return false;" class="opacity-80 hover:opacity-100 transition">석사 진단</a>
                 <a href="https://study-uk.britishcouncil.org/" target="_blank" rel="noopener" class="opacity-80 hover:opacity-100 transition">Study UK</a>
             </div>
-            <span class="text-gray-400 hidden sm:inline">무료 진단 가이드</span>
+            <a href="https://jaebong-choi.github.io/study-guide-hub/" class="text-gray-300 hover:text-white transition border border-gray-600 hover:border-gray-400 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 whitespace-nowrap font-medium"><i class="fa-solid fa-globe text-gold"></i> 국가 선택</a>
         </div>
     </nav>
 
@@ -930,7 +930,7 @@ const majorCategories = {
                 : (track === 'pg' ? '석사 진단' : '학부 진단');
             const fields = { source: 'uk', country: '영국', result: result, link: buildResultLink() };
             if (window.Tally) {
-                window.Tally.openPopup(TALLY_FORM_ID, { layout: 'modal', width: 420, hiddenFields: fields });
+                window.Tally.openPopup(TALLY_FORM_ID, { layout: 'modal', width: Math.min(640, window.innerWidth - 32), hiddenFields: fields });
             } else {
                 const q = Object.entries(fields).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
                 window.open('https://tally.so/r/' + TALLY_FORM_ID + '?' + q, '_blank', 'noopener');
