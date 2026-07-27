@@ -24,6 +24,22 @@
 
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 
+    <!-- 화면 모드(다크/라이트) — 렌더링 전에 적용해 깜빡임 방지.
+         키를 4개 사이트가 공유하므로(같은 도메인) 한 번 고르면 전체에 유지된다. -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('sgh-theme');
+                if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+        function toggleTheme() {
+            var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('sgh-theme', next); } catch (e) {}
+        }
+    </script>
+
     <!-- Tally 팝업 위젯 (무료 상담 신청 폼) -->
     <script async src="https://tally.so/widgets/embed.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,6 +100,54 @@
         .filter-chip.active { background:#1d1d1f; color:#fff; border-color:#1d1d1f; }
         a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid #FFDE59; outline-offset:2px; }
         html { scroll-behavior:smooth; }
+
+        /* =========================================================
+         * 라이트 모드 — html[data-theme="light"]
+         * 기본값은 다크(현재 디자인 유지). 헤더의 토글로 전환하며
+         * 선택값은 localStorage("sgh-theme")에 저장된다.
+         * 히어로와 결과 헤더(.photo-header)는 사진 위 흰 글씨 구조라
+         * 두 모드 모두 어두운 톤을 유지한다. section-light는 원래 밝다.
+         * ========================================================= */
+        .theme-toggle {
+            width:28px; height:28px; border-radius:50%;
+            border:1px solid #4a4a50; background:transparent; color:inherit;
+            display:inline-flex; align-items:center; justify-content:center;
+            font-size:12px; cursor:pointer; transition:all .2s ease; flex-shrink:0;
+        }
+        .theme-toggle:hover { border-color:#8a8a92; color:#fff; }
+        .theme-toggle .fa-moon { display:none; }
+        html[data-theme="light"] .theme-toggle { border-color:#c7c7cc; }
+        html[data-theme="light"] .theme-toggle:hover { border-color:#86868b; color:#000; }
+        html[data-theme="light"] .theme-toggle .fa-moon { display:inline-block; }
+        html[data-theme="light"] .theme-toggle .fa-sun { display:none; }
+
+        html[data-theme="light"] body { background-color:#ffffff; color:#1d1d1f; }
+
+        html[data-theme="light"] .glass-nav {
+            background:rgba(255,255,255,.82);
+            border-bottom:1px solid rgba(0,0,0,.1);
+        }
+        html[data-theme="light"] .glass-nav, html[data-theme="light"] .glass-nav a { color:#3a3a3c; }
+        html[data-theme="light"] .glass-nav .text-white,
+        html[data-theme="light"] .glass-nav a:hover { color:#1d1d1f !important; }
+        html[data-theme="light"] .glass-nav .text-gray-300 { color:#3a3a3c !important; }
+        html[data-theme="light"] .glass-nav .border-gray-600 { border-color:#c7c7cc !important; }
+        html[data-theme="light"] .glass-nav .text-gold { color:#A87E00 !important; }
+
+        /* 진단 대화 섹션 */
+        html[data-theme="light"] #chat-section { background-color:#f5f5f7; color:#1d1d1f; }
+        html[data-theme="light"] .chat-bubble-ai { background:#ffffff; border-color:#e5e5e7; color:#1d1d1f; }
+        html[data-theme="light"] #chat-section .bg-\[\#2d2d2f\] { background-color:#ffffff !important; }
+        html[data-theme="light"] #chat-section .text-\[\#f5f5f7\] { color:#1d1d1f !important; }
+        html[data-theme="light"] #chat-section .border-\[\#3d3d40\] { border-color:#d2d2d7 !important; }
+
+        /* 푸터 */
+        html[data-theme="light"] footer.bg-\[\#0b0b0c\] { background-color:#f5f5f7 !important; }
+        html[data-theme="light"] footer.bg-\[\#0b0b0c\] .text-white { color:#1d1d1f !important; }
+        html[data-theme="light"] footer.bg-\[\#0b0b0c\] .text-gold { color:#A87E00 !important; }
+        html[data-theme="light"] footer.bg-\[\#0b0b0c\] .text-gray-500,
+        html[data-theme="light"] footer.bg-\[\#0b0b0c\] .text-gray-600 { color:#6e6e73 !important; }
+        html[data-theme="light"] .border-gray-900 { border-color:#d2d2d7 !important; }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col">
@@ -101,7 +165,12 @@
                 <a href="#" onclick="startConsulting('pg'); return false;" class="opacity-80 hover:opacity-100 transition">석사 진단</a>
                 <a href="https://study-uk.britishcouncil.org/" target="_blank" rel="noopener" class="opacity-80 hover:opacity-100 transition">Study UK</a>
             </div>
-            <a href="https://jaebong-choi.github.io/study-guide-hub/" class="text-gray-300 hover:text-white transition border border-gray-600 hover:border-gray-400 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 whitespace-nowrap font-medium"><i class="fa-solid fa-globe text-gold"></i> 국가 선택</a>
+            <div class="flex items-center gap-2">
+                <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="화면 모드 전환" title="밝게 / 어둡게">
+                    <i class="fa-solid fa-sun"></i><i class="fa-solid fa-moon"></i>
+                </button>
+                <a href="https://jaebong-choi.github.io/study-guide-hub/" class="text-gray-300 hover:text-white transition border border-gray-600 hover:border-gray-400 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 whitespace-nowrap font-medium"><i class="fa-solid fa-globe text-gold"></i> 국가 선택</a>
+            </div>
         </div>
     </nav>
 
