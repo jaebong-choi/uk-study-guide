@@ -33,14 +33,22 @@
                 if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
             } catch (e) {}
         })();
-        function applyTheme(t) {
-            document.documentElement.setAttribute('data-theme', t);
-            var isLight = t === 'light';
+        /* 매개변수 이름은 t()(번역 함수)와 겹치지 않게 theme으로 둔다. */
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            syncThemeLabel();
+        }
+        /* 스위치의 aria 상태와 라벨을 현재 테마·언어에 맞춘다.
+           언어를 바꿀 때도 라벨을 다시 써야 하므로 i18n.js의 applyLang이 호출한다. */
+        function syncThemeLabel() {
+            var isLight = document.documentElement.getAttribute('data-theme') === 'light';
             document.querySelectorAll('.theme-switch').forEach(function (b) {
                 b.setAttribute('aria-checked', isLight ? 'true' : 'false');
             });
             document.querySelectorAll('[data-theme-label]').forEach(function (e) {
-                e.textContent = isLight ? '라이트' : '다크';
+                e.textContent = (typeof t === 'function')
+                    ? t(isLight ? 'themeLight' : 'themeDark')
+                    : (isLight ? '라이트' : '다크');
             });
         }
         function toggleTheme() {
@@ -53,6 +61,9 @@
             applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
         });
     </script>
+
+    <!-- 한국어/English 사전 · 번역 함수 (t · tr · applyLang · setLang) -->
+    <script src="i18n.js?v=20260729"></script>
 
     <!-- Tally 팝업 위젯 (무료 상담 신청 폼) -->
     <script async src="https://tally.so/widgets/embed.js"></script>
@@ -122,6 +133,23 @@
          * 히어로와 결과 헤더(.photo-header)는 사진 위 흰 글씨 구조라
          * 두 모드 모두 어두운 톤을 유지한다. section-light는 원래 밝다.
          * ========================================================= */
+        /* 언어 전환 (한국어 / English) — 두 칸 세그먼트 컨트롤 */
+        .lang-switch {
+            display:inline-flex; border:1px solid rgba(255,255,255,.28);
+            border-radius:999px; overflow:hidden; flex-shrink:0;
+        }
+        .lang-switch button {
+            border:0; background:transparent; color:#a1a1a6;
+            font-size:11.5px; font-weight:700; letter-spacing:.02em;
+            padding:5px 10px; cursor:pointer; transition:background .2s ease, color .2s ease;
+        }
+        .lang-switch button:hover { color:#f5f5f7; }
+        .lang-switch button.on { background:#f5f5f7; color:#0b0b0f; }
+        html[data-theme="light"] .lang-switch { border-color:rgba(0,0,0,.2); }
+        html[data-theme="light"] .lang-switch button { color:#6e6e73; }
+        html[data-theme="light"] .lang-switch button:hover { color:#1d1d1f; }
+        html[data-theme="light"] .lang-switch button.on { background:#1d1d1f; color:#ffffff; }
+
         /* 화면 모드 전환 스위치 (허브와 동일 규격)
          * 노브가 왼쪽(달)이면 다크, 오른쪽(해)으로 밀리면 라이트.
          * 노브에 덮인 쪽 아이콘은 배경색으로 반전시켜 현재 상태를 드러낸다. */
@@ -203,15 +231,19 @@
             <a href="#" onclick="goHome(); return false;" class="opacity-90 hover:opacity-100 transition flex items-center gap-2">
                 <i class="fa-solid fa-map-location-dot text-gold"></i>
                 <span class="font-bold text-white tracking-normal text-[13px]">UK Study Guide</span>
-                <span class="font-semibold text-white tracking-normal ml-1 border-l border-gray-600 pl-2">영국 진학 AI</span>
+                <span class="font-semibold text-white tracking-normal ml-1 border-l border-gray-600 pl-2" data-i18n="navTagline">영국 진학 AI</span>
             </a>
             <div class="hidden md:flex space-x-8 font-medium">
-                <a href="#" onclick="startConsulting('ug'); return false;" class="opacity-80 hover:opacity-100 transition">학부 진단</a>
-                <a href="#" onclick="startConsulting('pg'); return false;" class="opacity-80 hover:opacity-100 transition">석사 진단</a>
+                <a href="#" onclick="startConsulting('ug'); return false;" class="opacity-80 hover:opacity-100 transition" data-i18n="navUg">학부 진단</a>
+                <a href="#" onclick="startConsulting('pg'); return false;" class="opacity-80 hover:opacity-100 transition" data-i18n="navPg">석사 진단</a>
                 <a href="https://study-uk.britishcouncil.org/" target="_blank" rel="noopener" class="opacity-80 hover:opacity-100 transition">Study UK</a>
             </div>
             <div class="flex items-center gap-2">
-                <button type="button" class="theme-switch" role="switch" aria-checked="false" onclick="toggleTheme()" aria-label="화면 모드 전환" title="밝게 / 어둡게">
+                <div class="lang-switch" role="group" data-i18n-aria="langAria" aria-label="언어 선택">
+                    <button type="button" data-lang="ko" onclick="setLang('ko')" aria-pressed="true">KO</button>
+                    <button type="button" data-lang="en" onclick="setLang('en')" aria-pressed="false">EN</button>
+                </div>
+                <button type="button" class="theme-switch" role="switch" aria-checked="false" onclick="toggleTheme()" data-i18n-aria="themeAria" data-i18n-title="themeTitle" aria-label="화면 모드 전환" title="밝게 / 어둡게">
                     <span class="switch-track" aria-hidden="true">
                         <span class="switch-knob"></span>
                         <svg class="switch-icon icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
@@ -219,7 +251,7 @@
                     </span>
                     <span class="switch-label" data-theme-label>다크</span>
                 </button>
-                <a href="https://jaebong-choi.github.io/study-guide-hub/" class="text-gray-300 hover:text-white transition border border-gray-600 hover:border-gray-400 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 whitespace-nowrap font-medium"><i class="fa-solid fa-globe text-gold"></i> 국가 선택</a>
+                <a href="https://jaebong-choi.github.io/study-guide-hub/" class="text-gray-300 hover:text-white transition border border-gray-600 hover:border-gray-400 rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 whitespace-nowrap font-medium"><i class="fa-solid fa-globe text-gold"></i> <span data-i18n="navHub">국가 선택</span></a>
             </div>
         </div>
     </nav>
@@ -231,17 +263,17 @@
         <section id="hero-section" class="section-dark flex-grow flex flex-col items-center justify-center text-center px-4 relative overflow-hidden min-h-[90vh] py-16">
             <div class="z-10 fade-in-up" style="animation-delay:.1s;">
                 <h2 class="text-gold font-bold tracking-[.08em] text-sm md:text-base mb-5 hero-shadow">UK UNIVERSITY PATHWAY GUIDE · QS 2027</h2>
-                <h1 class="text-5xl md:text-7xl font-bold tracking-tighter2 leading-tight mb-6 text-white hero-shadow">
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tighter2 leading-tight mb-6 text-white hero-shadow" data-i18n-html="heroTitle">
                     영국 대학 진학,<br>AI로 설계하다.
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-100 font-normal tracking-tight2 mb-10 max-w-2xl mx-auto hero-shadow">
+                <p class="text-xl md:text-2xl text-gray-100 font-normal tracking-tight2 mb-10 max-w-2xl mx-auto hero-shadow" data-i18n-html="heroSub">
                     내 성적과 목표에 맞는 영국 대학 입학 루트를<br class="hidden sm:block"><strong class="text-white font-semibold">3분 만에</strong> 추천받으세요.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <button onclick="startConsulting('ug')" class="pill-btn bg-gold hover:bg-gold-deep text-black px-8 py-4 text-lg font-semibold inline-flex items-center justify-center gap-2 shadow-lg shadow-black/40 w-full sm:w-auto">
+                    <button onclick="startConsulting('ug')" class="pill-btn bg-gold hover:bg-gold-deep text-black px-8 py-4 text-lg font-semibold inline-flex items-center justify-center gap-2 shadow-lg shadow-black/40 w-full sm:w-auto" data-i18n-html="heroUgBtn">
                         학부 진학 진단 <span class="text-sm font-medium opacity-70">파운데이션 · IYO</span>
                     </button>
-                    <button onclick="startConsulting('pg')" class="pill-btn bg-white/15 border border-white/60 text-white hover:bg-white/25 hover:border-gold hover:text-gold px-8 py-4 text-lg font-semibold inline-flex items-center justify-center gap-2 w-full sm:w-auto backdrop-blur-md shadow-lg shadow-black/30">
+                    <button onclick="startConsulting('pg')" class="pill-btn bg-white/15 border border-white/60 text-white hover:bg-white/25 hover:border-gold hover:text-gold px-8 py-4 text-lg font-semibold inline-flex items-center justify-center gap-2 w-full sm:w-auto backdrop-blur-md shadow-lg shadow-black/30" data-i18n-html="heroPgBtn">
                         석사 진학 진단 <span class="text-sm font-normal opacity-80">Direct · 프리마스터</span>
                     </button>
                 </div>
@@ -252,19 +284,19 @@
         <section id="home-extra" class="bg-white text-ink2">
             <div class="py-24 px-4">
                 <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-                    <img src="assets/img/students-walking.jpg" alt="영국 대학 캠퍼스를 걷는 학생들" class="rounded-3xl shadow-xl w-full object-cover aspect-[4/5]" loading="lazy">
+                    <img src="assets/img/students-walking.jpg" alt="영국 대학 캠퍼스를 걷는 학생들" data-i18n-alt="homeImgAlt1" class="rounded-3xl shadow-xl w-full object-cover aspect-[4/5]" loading="lazy">
                     <div>
                         <p class="text-royal font-semibold tracking-widest text-[13px] uppercase mb-4">UK Study Guide</p>
-                        <h2 class="text-3xl md:text-4xl font-bold tracking-tighter2 leading-tight mb-6 text-black">누구에게나 열린,<br>중립적인 진학 가이드.</h2>
-                        <p class="text-[16px] text-gray-600 leading-relaxed mb-8">이 페이지는 특정 유학원과 무관한 무료 정보 가이드입니다. QS 2027 데이터와 각 대학·기관 공시 정보를 기반으로, 내 상황에 맞는 영국 진학 경로를 스스로 확인할 수 있도록 만들었습니다.</p>
+                        <h2 class="text-3xl md:text-4xl font-bold tracking-tighter2 leading-tight mb-6 text-black" data-i18n-html="homeTitle">누구에게나 열린,<br>중립적인 진학 가이드.</h2>
+                        <p class="text-[16px] text-gray-600 leading-relaxed mb-8" data-i18n="homeDesc">이 페이지는 특정 유학원과 무관한 무료 정보 가이드입니다. QS 2027 데이터와 각 대학·기관 공시 정보를 기반으로, 내 상황에 맞는 영국 진학 경로를 스스로 확인할 수 있도록 만들었습니다.</p>
                         <ul class="space-y-4 mb-9">
-                            <li class="flex items-start gap-3.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-royal flex items-center justify-center shrink-0"><i class="fa-solid fa-chart-simple"></i></span><span class="text-[15px] text-gray-700 leading-snug pt-1.5"><strong>QS 2027 순위 · 26/27 학비 데이터</strong> 기반의 학교별 안내</span></li>
-                            <li class="flex items-start gap-3.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-royal flex items-center justify-center shrink-0"><i class="fa-solid fa-route"></i></span><span class="text-[15px] text-gray-700 leading-snug pt-1.5">파운데이션 · IYO · 프리마스터 등 <strong>경로별 장단점 비교</strong></span></li>
-                            <li class="flex items-start gap-3.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-royal flex items-center justify-center shrink-0"><i class="fa-solid fa-link"></i></span><span class="text-[15px] text-gray-700 leading-snug pt-1.5">진단 결과를 <strong>링크 하나로 저장·공유</strong>, 대학 공식 페이지로 바로 연결</span></li>
+                            <li class="flex items-start gap-3.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-royal flex items-center justify-center shrink-0"><i class="fa-solid fa-chart-simple"></i></span><span class="text-[15px] text-gray-700 leading-snug pt-1.5" data-i18n-html="homeLi1"><strong>QS 2027 순위 · 26/27 학비 데이터</strong> 기반의 학교별 안내</span></li>
+                            <li class="flex items-start gap-3.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-royal flex items-center justify-center shrink-0"><i class="fa-solid fa-route"></i></span><span class="text-[15px] text-gray-700 leading-snug pt-1.5" data-i18n-html="homeLi2">파운데이션 · IYO · 프리마스터 등 <strong>경로별 장단점 비교</strong></span></li>
+                            <li class="flex items-start gap-3.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-royal flex items-center justify-center shrink-0"><i class="fa-solid fa-link"></i></span><span class="text-[15px] text-gray-700 leading-snug pt-1.5" data-i18n-html="homeLi3">진단 결과를 <strong>링크 하나로 저장·공유</strong>, 대학 공식 페이지로 바로 연결</span></li>
                         </ul>
                         <div class="flex flex-col sm:flex-row gap-3">
-                            <button onclick="startConsulting('ug')" class="pill-btn bg-ink2 hover:bg-black text-white px-7 py-3.5 font-semibold text-center">학부 진단 시작</button>
-                            <button onclick="startConsulting('pg')" class="pill-btn bg-white border border-gray-300 text-ink2 hover:bg-gray-50 px-7 py-3.5 font-medium text-center">석사 진단 시작</button>
+                            <button onclick="startConsulting('ug')" class="pill-btn bg-ink2 hover:bg-black text-white px-7 py-3.5 font-semibold text-center" data-i18n="homeUgStart">학부 진단 시작</button>
+                            <button onclick="startConsulting('pg')" class="pill-btn bg-white border border-gray-300 text-ink2 hover:bg-gray-50 px-7 py-3.5 font-medium text-center" data-i18n="homePgStart">석사 진단 시작</button>
                         </div>
                     </div>
                 </div>
@@ -273,22 +305,22 @@
             <div class="py-20 px-4 bg-paper">
                 <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
                     <div class="order-2 md:order-1">
-                        <h3 class="text-2xl md:text-3xl font-bold tracking-tighter2 leading-tight mb-5 text-black">정보는 언제나,<br>공식 출처에서 확인하세요.</h3>
-                        <p class="text-[15px] text-gray-600 leading-relaxed mb-7">이 가이드의 진단 결과는 방향을 잡기 위한 1차 자료입니다. 입학요건·학비·비자 규정은 수시로 바뀌므로, 최종 결정 전에는 반드시 아래 공식 채널에서 최신 정보를 확인하세요.</p>
+                        <h3 class="text-2xl md:text-3xl font-bold tracking-tighter2 leading-tight mb-5 text-black" data-i18n-html="srcTitle">정보는 언제나,<br>공식 출처에서 확인하세요.</h3>
+                        <p class="text-[15px] text-gray-600 leading-relaxed mb-7" data-i18n="srcDesc">이 가이드의 진단 결과는 방향을 잡기 위한 1차 자료입니다. 입학요건·학비·비자 규정은 수시로 바뀌므로, 최종 결정 전에는 반드시 아래 공식 채널에서 최신 정보를 확인하세요.</p>
                         <ul class="space-y-2.5 text-[14px] text-gray-700 mb-7">
-                            <li class="flex gap-3"><i class="fa-solid fa-building-columns text-royal mt-1 shrink-0"></i><a href="https://study-uk.britishcouncil.org/" target="_blank" rel="noopener" class="hover:underline"><strong>Study UK</strong> — 영국문화원 공식 유학 안내</a></li>
-                            <li class="flex gap-3"><i class="fa-solid fa-file-signature text-royal mt-1 shrink-0"></i><a href="https://www.ucas.com/" target="_blank" rel="noopener" class="hover:underline"><strong>UCAS</strong> — 영국 학부 지원 공식 시스템</a></li>
-                            <li class="flex gap-3"><i class="fa-solid fa-passport text-royal mt-1 shrink-0"></i><a href="https://www.gov.uk/student-visa" target="_blank" rel="noopener" class="hover:underline"><strong>GOV.UK</strong> — 학생비자(Student visa) 공식 안내</a></li>
+                            <li class="flex gap-3"><i class="fa-solid fa-building-columns text-royal mt-1 shrink-0"></i><a href="https://study-uk.britishcouncil.org/" target="_blank" rel="noopener" class="hover:underline" data-i18n-html="srcLink1"><strong>Study UK</strong> — 영국문화원 공식 유학 안내</a></li>
+                            <li class="flex gap-3"><i class="fa-solid fa-file-signature text-royal mt-1 shrink-0"></i><a href="https://www.ucas.com/" target="_blank" rel="noopener" class="hover:underline" data-i18n-html="srcLink2"><strong>UCAS</strong> — 영국 학부 지원 공식 시스템</a></li>
+                            <li class="flex gap-3"><i class="fa-solid fa-passport text-royal mt-1 shrink-0"></i><a href="https://www.gov.uk/student-visa" target="_blank" rel="noopener" class="hover:underline" data-i18n-html="srcLink3"><strong>GOV.UK</strong> — 학생비자(Student visa) 공식 안내</a></li>
                         </ul>
                     </div>
-                    <img src="assets/img/oxford-view.jpg" alt="영국 대학 건물" class="rounded-3xl shadow-xl w-full object-cover aspect-[4/3] order-1 md:order-2" loading="lazy">
+                    <img src="assets/img/oxford-view.jpg" alt="영국 대학 건물" data-i18n-alt="homeImgAlt2" class="rounded-3xl shadow-xl w-full object-cover aspect-[4/3] order-1 md:order-2" loading="lazy">
                 </div>
             </div>
 
             <footer class="bg-[#0b0b0c] py-12 text-center">
                 <p class="text-white font-bold text-[15px] mb-4"><i class="fa-solid fa-map-location-dot text-gold mr-2"></i>UK Study Guide</p>
-                <p class="text-xs text-gray-500 font-medium mb-2">ⓒ UK Study Guide. 정보 제공 목적으로 제작된 페이지입니다.</p>
-                <p class="text-[11px] text-gray-600 leading-relaxed max-w-xl mx-auto px-4">본 사이트는 특정 유학원·기관과 무관한 무료 정보 페이지입니다. 대학 순위는 QS World University Rankings 2027(2026년 6월 발표), 과정·요건 정보는 각 대학 및 운영 기관 공시 기준이며 학기마다 변동될 수 있습니다. 최종 지원 전 반드시 각 대학·기관 공식 페이지에서 최신 요강을 확인하세요.</p>
+                <p class="text-xs text-gray-500 font-medium mb-2" data-i18n="footerCopy">ⓒ UK Study Guide. 정보 제공 목적으로 제작된 페이지입니다.</p>
+                <p class="text-[11px] text-gray-600 leading-relaxed max-w-xl mx-auto px-4" data-i18n="footerDisclaimer">본 사이트는 특정 유학원·기관과 무관한 무료 정보 페이지입니다. 대학 순위는 QS World University Rankings 2027(2026년 6월 발표), 과정·요건 정보는 각 대학 및 운영 기관 공시 기준이며 학기마다 변동될 수 있습니다. 최종 지원 전 반드시 각 대학·기관 공식 페이지에서 최신 요강을 확인하세요.</p>
             </footer>
         </section>
 
@@ -905,9 +937,9 @@ const majorCategories = {
             if (!m) { m = document.createElement('div'); m.id = 'uni-modal'; document.body.appendChild(m); }
             const routes = [];
             if (ug) {
-                if (ug.grp === 'direct') routes.push('<span class="route-badge bg-gray-100 text-gray-600"><i class="fa-solid fa-arrow-right text-[10px]"></i> A-level · IB 전형</span>');
-                if (ug.fnd) routes.push(`<span class="route-badge bg-blue-50 text-royal"><i class="fa-solid fa-layer-group text-[10px]"></i> ${ug.fnd}</span>`);
-                if (ug.iyo) routes.push('<span class="route-badge bg-[#EAFFD0] text-[#3c6b00]"><i class="fa-solid fa-forward text-[10px]"></i> IYO · 2학년 편입</span>');
+                if (ug.grp === 'direct') routes.push(`<span class="route-badge bg-gray-100 text-gray-600"><i class="fa-solid fa-arrow-right text-[10px]"></i> ${t('routeAlevel')}</span>`);
+                if (ug.fnd) routes.push(`<span class="route-badge bg-blue-50 text-royal"><i class="fa-solid fa-layer-group text-[10px]"></i> ${tr(ug.fnd)}</span>`);
+                if (ug.iyo) routes.push(`<span class="route-badge bg-[#EAFFD0] text-[#3c6b00]"><i class="fa-solid fa-forward text-[10px]"></i> ${t('routeIyo2')}</span>`);
             }
             m.innerHTML = `
                 <div class="fixed inset-0 z-[100]">
@@ -915,23 +947,23 @@ const majorCategories = {
                     <div class="relative max-w-2xl mx-auto mt-8 md:mt-16 mb-8 mx-4 sm:mx-auto bg-white rounded-3xl shadow-2xl max-h-[85vh] overflow-y-auto">
                         <div class="bg-ink2 text-white p-8 md:p-10 relative">
                             <button onclick="closeUniDetail()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
-                            ${ug ? `<span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-[11px] font-semibold tracking-widest text-gray-300 mb-4 uppercase">QS 2027 세계 ${ug.qs}위</span>` : ''}
+                            ${ug ? `<span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-[11px] font-semibold tracking-widest text-gray-300 mb-4 uppercase">${t('qsBadge')(ug.qs)}</span>` : ''}
                             <h3 class="text-2xl md:text-3xl font-bold tracking-tight">${name}</h3>
-                            <p class="text-gray-400 mt-1">${info.k}</p>
+                            <p class="text-gray-400 mt-1">${t('modalSubName')(info.k)}</p>
                         </div>
                         <div class="p-8 md:p-10">
                             <div class="grid grid-cols-3 gap-3 mb-7 text-center">
-                                <div class="bg-paper rounded-xl py-4 px-2"><p class="text-[11px] text-mute font-semibold mb-1">설립</p><p class="text-[14px] font-bold text-black">${info.found}</p></div>
-                                <div class="bg-paper rounded-xl py-4 px-2"><p class="text-[11px] text-mute font-semibold mb-1">위치</p><p class="text-[14px] font-bold text-black leading-tight">${info.city}</p></div>
-                                <div class="bg-paper rounded-xl py-4 px-2"><p class="text-[11px] text-mute font-semibold mb-1">학생 수</p><p class="text-[14px] font-bold text-black">${info.students}</p></div>
+                                <div class="bg-paper rounded-xl py-4 px-2"><p class="text-[11px] text-mute font-semibold mb-1">${t('statFounded')}</p><p class="text-[14px] font-bold text-black">${tr(info.found)}</p></div>
+                                <div class="bg-paper rounded-xl py-4 px-2"><p class="text-[11px] text-mute font-semibold mb-1">${t('statCity')}</p><p class="text-[14px] font-bold text-black leading-tight">${tr(info.city)}</p></div>
+                                <div class="bg-paper rounded-xl py-4 px-2"><p class="text-[11px] text-mute font-semibold mb-1">${t('statStudents')}</p><p class="text-[14px] font-bold text-black">${tr(info.students)}</p></div>
                             </div>
-                            <p class="text-[15px] text-gray-700 leading-relaxed mb-7">${info.desc}</p>
-                            <p class="text-[13px] font-semibold text-ink2 mb-2.5">우세 전공</p>
-                            <div class="flex flex-wrap gap-2 mb-7">${info.majors.map(mj => `<span class="info-badge text-[13px]">${mj}</span>`).join('')}</div>
-                            ${routes.length ? `<p class="text-[13px] font-semibold text-ink2 mb-2.5">학부 진입 경로</p><div class="flex flex-wrap gap-2 mb-3">${routes.join('')}</div>` : ''}
-                            ${ug ? `<p class="text-[13px] text-mute leading-relaxed mb-7">${ug.note}</p>` : '<div class="mb-4"></div>'}
+                            <p class="text-[15px] text-gray-700 leading-relaxed mb-7">${tr(info.desc)}</p>
+                            <p class="text-[13px] font-semibold text-ink2 mb-2.5">${t('topMajors')}</p>
+                            <div class="flex flex-wrap gap-2 mb-7">${info.majors.map(mj => `<span class="info-badge text-[13px]">${tr(mj)}</span>`).join('')}</div>
+                            ${routes.length ? `<p class="text-[13px] font-semibold text-ink2 mb-2.5">${t('ugRoutesLabel')}</p><div class="flex flex-wrap gap-2 mb-3">${routes.join('')}</div>` : ''}
+                            ${ug ? `<p class="text-[13px] text-mute leading-relaxed mb-7">${tr(ug.note)}</p>` : '<div class="mb-4"></div>'}
                             <div class="flex flex-col gap-2.5">
-                                <a href="${ug ? ug.url : officialSchoolUrl(name)}" target="_blank" rel="noopener" class="consult-banner text-center font-semibold py-3.5 px-4 w-full flex items-center justify-center gap-2 text-[15px]"><i class="fa-solid fa-globe text-xs"></i> 대학 공식 홈페이지 보기</a>
+                                <a href="${ug ? ug.url : officialSchoolUrl(name)}" target="_blank" rel="noopener" class="consult-banner text-center font-semibold py-3.5 px-4 w-full flex items-center justify-center gap-2 text-[15px]"><i class="fa-solid fa-globe text-xs"></i> ${t('visitOfficial')}</a>
                             </div>
                         </div>
                     </div>
@@ -1023,7 +1055,7 @@ const majorCategories = {
             const done = () => {
                 if (!btn) return;
                 const orig = btn.innerHTML;
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사 완료!';
+                btn.innerHTML = t('copied');
                 setTimeout(() => { btn.innerHTML = orig; }, 2000);
             };
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1033,11 +1065,11 @@ const majorCategories = {
         function shareBtnHTML() {
             return `
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2">
-                    <button onclick="openConsultForm()" class="pill-btn bg-gold hover:bg-gold-deep text-black px-6 py-3 text-[15px] font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center"><i class="fa-solid fa-comments text-xs"></i> 이 결과로 무료 상담 받기</button>
-                    <button id="share-btn" onclick="copyResultLink()" class="pill-btn bg-royal hover:bg-blue-800 text-white px-6 py-3 text-[15px] font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center"><i class="fa-solid fa-link text-xs"></i> 결과 링크 복사</button>
-                    <button onclick="goHome()" class="pill-btn bg-transparent border border-gray-600 text-gray-300 hover:border-gold hover:text-gold px-6 py-3 text-[15px] font-medium inline-flex items-center gap-2 w-full sm:w-auto justify-center">다시 진단하기 <i class="fa-solid fa-rotate-right text-xs"></i></button>
+                    <button onclick="openConsultForm()" class="pill-btn bg-gold hover:bg-gold-deep text-black px-6 py-3 text-[15px] font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center"><i class="fa-solid fa-comments text-xs"></i> ${t('resultCta')}</button>
+                    <button id="share-btn" onclick="copyResultLink()" class="pill-btn bg-royal hover:bg-blue-800 text-white px-6 py-3 text-[15px] font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center"><i class="fa-solid fa-link text-xs"></i> ${t('resultCopy')}</button>
+                    <button onclick="goHome()" class="pill-btn bg-transparent border border-gray-600 text-gray-300 hover:border-gold hover:text-gold px-6 py-3 text-[15px] font-medium inline-flex items-center gap-2 w-full sm:w-auto justify-center">${t('resultRestart')} <i class="fa-solid fa-rotate-right text-xs"></i></button>
                 </div>
-                <p class="text-[12px] text-gray-500 mt-4">무료 상담 신청 시 이 진단 결과가 자동으로 첨부됩니다. 링크를 복사해 카카오톡 · 문자로 전달하면 같은 결과 페이지가 열립니다.</p>`;
+                <p class="text-[12px] text-gray-500 mt-4">${t('shareHint')}</p>`;
         }
 
         // ── 무료 상담 신청 (Tally 팝업) — 진단 결과를 히든 필드로 자동 전달 ──
@@ -1058,8 +1090,9 @@ const majorCategories = {
 
         function activeQuestions() { return track === 'pg' ? pgQuestions : ugQuestions; }
 
-        function startConsulting(t) {
-            track = t || 'pg';
+        /* 매개변수 이름은 t()(번역 함수)와 겹치지 않게 trk로 둔다. */
+        function startConsulting(trk) {
+            track = trk || 'pg';
             currentState = {}; step = 0; flowStack = [];
             document.getElementById('hero-section').style.display = 'none';
             document.getElementById('home-extra').style.display = 'none';
@@ -1068,9 +1101,7 @@ const majorCategories = {
             const chatSection = document.getElementById('chat-section');
             chatSection.style.display = 'flex';
             chatSection.classList.add('fade-in-up');
-            const intro = track === 'pg'
-                ? '안녕하세요, UK Study Guide AI 진단입니다.<br>최신 2026-27 영국 대학 데이터를 바탕으로 <strong>석사 진학</strong> 맞춤 분석을 시작합니다.'
-                : '안녕하세요, UK Study Guide AI 진단입니다.<br>QS 2027 데이터 기반으로 <strong>영국 학부 진학(파운데이션 · IYO)</strong> 경로 분석을 시작합니다.';
+            const intro = track === 'pg' ? t('introPg') : t('introUg');
             addChatBubble('ai', intro);
             setTimeout(askQuestion, 800);
             window.scrollTo({ top: 0 });
@@ -1103,27 +1134,27 @@ const majorCategories = {
                 const q = qs[step];
                 // 뒤로가기용 스냅샷. 이 질문을 답하기 직전 상태 저장
                 flowStack.push({ step, state: { ...currentState }, childCount: document.getElementById('chat-history').children.length });
-                addChatBubble('ai', q.q);
+                addChatBubble('ai', tr(q.q));
                 if (q.key === 'major' && track === 'pg') { renderMajorCategories(); return; }
                 const c = document.getElementById('options-container');
                 c.innerHTML = '';
                 q.options.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = OPT_BTN_CLASS;
-                    btn.innerText = opt.label;
-                    btn.onclick = () => handleAnswer(opt.value, opt.label);
+                    btn.innerText = tr(opt.label);
+                    btn.onclick = () => handleAnswer(opt.value, tr(opt.label));
                     c.appendChild(btn);
                 });
                 if (q.note) {
                     const note = document.createElement('p');
                     note.className = 'text-[13px] text-gray-500 leading-relaxed text-center sm:col-span-2 mt-1';
-                    note.innerText = q.note;
+                    note.innerText = tr(q.note);
                     c.appendChild(note);
                 }
                 appendBackButton(c);
             } else {
                 document.getElementById('options-container').innerHTML = '';
-                addChatBubble('ai', '정보 입력이 완료되었습니다. 최신 26/27 영국 입시 데이터를 바탕으로 결과를 분석 중입니다...');
+                addChatBubble('ai', t('analyzing'));
                 setTimeout(showResult, 1800);
             }
         }
@@ -1133,7 +1164,7 @@ const majorCategories = {
             if (flowStack.length < 2) return;
             const back = document.createElement('button');
             back.className = 'pill-btn bg-transparent text-gray-500 hover:text-gold border border-transparent hover:border-[#3d3d40] py-2.5 px-4 font-medium text-[13px] w-full sm:col-span-2 mt-1 inline-flex items-center justify-center gap-2';
-            back.innerHTML = '<i class="fa-solid fa-arrow-left text-[11px]"></i> 이전 질문으로';
+            back.innerHTML = t('backPrev');
             back.onclick = goBackQuestion;
             c.appendChild(back);
         }
@@ -1154,14 +1185,14 @@ const majorCategories = {
             if (value === '__other__') {
                 addChatBubble('user', label);
                 document.getElementById('options-container').innerHTML = '';
-                addChatBubble('ai', '보유하신 시험 종류를 선택해주세요. 입력하신 총점을 IELTS 밴드로 환산해 드립니다.');
+                addChatBubble('ai', t('otherTestPrompt'));
                 setTimeout(renderTestTypeChoice, 500);
                 return;
             }
             if (value === '__custommajor__') {
                 addChatBubble('user', label);
                 document.getElementById('options-container').innerHTML = '';
-                addChatBubble('ai', '희망하시는 전공명을 자세히 입력해주세요. 가장 가까운 계열로 매칭해 분석해 드립니다.<br><span class="block mt-2 text-[13px] text-gray-500">예) 스포츠 매니지먼트, 게임 디자인, 물리치료학, 항공운항학</span>');
+                addChatBubble('ai', t('customPrompt'));
                 setTimeout(renderCustomMajorInput, 500);
                 return;
             }
@@ -1193,22 +1224,22 @@ const majorCategories = {
             const wrap = document.createElement('div');
             wrap.className = 'sm:col-span-2 flex flex-col gap-3';
             wrap.innerHTML = `
-                <input id="customMajorInput" type="text" maxlength="40" placeholder="전공명을 입력하세요 (예: 스포츠 매니지먼트)"
+                <input id="customMajorInput" type="text" maxlength="40" placeholder="${t('customPlaceholder')}"
                     class="bg-[#2d2d2f] text-white border border-[#3d3d40] rounded-2xl py-3.5 px-5 text-[15px] focus:outline-none focus:border-gold w-full placeholder-gray-500" />
                 <div class="flex gap-3">
-                    <button id="customMajorBtn" class="pill-btn bg-gold hover:bg-gold-deep text-black py-3.5 px-4 font-semibold text-[15px] flex-1">이 전공으로 분석하기</button>
-                    <button id="customMajorBack" class="pill-btn bg-[#2d2d2f] text-gray-300 border border-[#3d3d40] hover:bg-[#3d3d40] py-3.5 px-5 font-medium text-[15px]">← 뒤로</button>
+                    <button id="customMajorBtn" class="pill-btn bg-gold hover:bg-gold-deep text-black py-3.5 px-4 font-semibold text-[15px] flex-1">${t('customAnalyze')}</button>
+                    <button id="customMajorBack" class="pill-btn bg-[#2d2d2f] text-gray-300 border border-[#3d3d40] hover:bg-[#3d3d40] py-3.5 px-5 font-medium text-[15px]">${t('backShort')}</button>
                 </div>`;
             c.appendChild(wrap);
             const submit = () => {
                 const input = document.getElementById('customMajorInput');
                 const raw = input.value.trim().replace(/[<>&"']/g, '');
-                if (!raw) { input.value = ''; input.placeholder = '전공명을 입력해주세요'; return; }
+                if (!raw) { input.value = ''; input.placeholder = t('customEmpty'); return; }
                 const f = mapCustomMajorToField(raw);
                 currentState.customMajor = raw;
                 currentState.field = f;
                 addChatBubble('user', raw);
-                addChatBubble('ai', `'<strong>${raw}</strong>' 전공은 <strong>${fieldMajors[f].label}</strong> 계열과 가장 가깝습니다. 이 계열 기준으로 분석을 진행하니, 실제 개설 대학과 세부 전공명은 각 대학 공식 페이지에서 확인하세요.`);
+                addChatBubble('ai', t('customMatched')(raw, tr(fieldMajors[f].label)));
                 document.getElementById('options-container').innerHTML = '';
                 step++;
                 setTimeout(askQuestion, 1100);
@@ -1221,8 +1252,8 @@ const majorCategories = {
                 activeQuestions()[step].options.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = OPT_BTN_CLASS;
-                    btn.innerText = opt.label;
-                    btn.onclick = () => handleAnswer(opt.value, opt.label);
+                    btn.innerText = tr(opt.label);
+                    btn.onclick = () => handleAnswer(opt.value, tr(opt.label));
                     c.appendChild(btn);
                 });
                 appendBackButton(c);
@@ -1236,10 +1267,10 @@ const majorCategories = {
             Object.keys(majorCategories).forEach(cat => {
                 const b = document.createElement('button');
                 b.className = OPT_BTN_CLASS;
-                b.innerText = cat;
+                b.innerText = tr(cat);
                 b.onclick = () => {
-                    addChatBubble('user', cat);
-                    addChatBubble('ai', `<strong>${cat}</strong>을 선택하셨네요. 이제 세부 전공을 선택해주세요.`);
+                    addChatBubble('user', tr(cat));
+                    addChatBubble('ai', t('catPicked')(tr(cat)));
                     renderMajorList(cat);
                 };
                 c.appendChild(b);
@@ -1252,13 +1283,13 @@ const majorCategories = {
             majorCategories[cat].forEach(m => {
                 const b = document.createElement('button');
                 b.className = OPT_BTN_CLASS;
-                b.innerText = m;
-                b.onclick = () => handleAnswer(m, m);
+                b.innerText = tr(m);
+                b.onclick = () => handleAnswer(m, tr(m));
                 c.appendChild(b);
             });
             const back = document.createElement('button');
             back.className = 'pill-btn bg-transparent text-gray-400 border border-[#3d3d40] hover:bg-[#2d2d2f] py-3.5 px-4 font-medium text-[14px] md:text-[15px] w-full sm:col-span-2';
-            back.innerText = '← 계열 다시 선택하기';
+            back.innerText = t('backToCats');
             back.onclick = renderMajorCategories;
             c.appendChild(back);
         }
@@ -1276,14 +1307,14 @@ const majorCategories = {
             });
             const back = document.createElement('button');
             back.className = 'pill-btn bg-transparent text-gray-400 border border-[#3d3d40] hover:bg-[#2d2d2f] py-3.5 px-4 font-medium text-[14px] md:text-[15px] w-full sm:col-span-2';
-            back.innerText = '← 성적 선택으로 돌아가기';
+            back.innerText = t('backToScores');
             back.onclick = () => {
                 c.innerHTML = '';
                 activeQuestions()[step].options.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = OPT_BTN_CLASS;
-                    btn.innerText = opt.label;
-                    btn.onclick = () => handleAnswer(opt.value, opt.label);
+                    btn.innerText = tr(opt.label);
+                    btn.onclick = () => handleAnswer(opt.value, tr(opt.label));
                     c.appendChild(btn);
                 });
                 appendBackButton(c);
@@ -1300,11 +1331,11 @@ const majorCategories = {
             wrap.className = 'sm:col-span-2 flex flex-col gap-3';
             wrap.innerHTML = `
                 <input id="engScoreInput" type="number" inputmode="numeric" min="${min}" max="${max}"
-                    placeholder="${testType} 총점을 입력하세요 (${min}~${max})"
+                    placeholder="${t('scorePh')(testType, min, max)}"
                     class="bg-[#2d2d2f] text-white border border-[#3d3d40] rounded-2xl py-3.5 px-5 text-[15px] focus:outline-none focus:border-gold w-full placeholder-gray-500" />
                 <div class="flex gap-3">
-                    <button id="engConvertBtn" class="pill-btn bg-gold hover:bg-gold-deep text-black py-3.5 px-4 font-semibold text-[15px] flex-1">IELTS로 환산하기</button>
-                    <button id="engBackBtn" class="pill-btn bg-[#2d2d2f] text-gray-300 border border-[#3d3d40] hover:bg-[#3d3d40] py-3.5 px-5 font-medium text-[15px]">← 뒤로</button>
+                    <button id="engConvertBtn" class="pill-btn bg-gold hover:bg-gold-deep text-black py-3.5 px-4 font-semibold text-[15px] flex-1">${t('convertBtn')}</button>
+                    <button id="engBackBtn" class="pill-btn bg-[#2d2d2f] text-gray-300 border border-[#3d3d40] hover:bg-[#3d3d40] py-3.5 px-5 font-medium text-[15px]">${t('backShort')}</button>
                 </div>`;
             c.appendChild(wrap);
             document.getElementById('engConvertBtn').onclick = () => convertEnglish(testType);
@@ -1317,13 +1348,13 @@ const majorCategories = {
             const s = parseInt(input.value, 10);
             const min = testType === 'TOEFL' ? 0 : 10;
             const max = testType === 'TOEFL' ? 120 : 90;
-            if (isNaN(s) || s < min || s > max) { input.value = ''; input.placeholder = `유효한 점수를 입력하세요 (${min}~${max})`; return; }
+            if (isNaN(s) || s < min || s > max) { input.value = ''; input.placeholder = t('scoreInvalid')(min, max); return; }
             const ielts = testType === 'TOEFL' ? toeflToIelts(s) : pteToIelts(s);
             const q = activeQuestions()[step];
             const band = q.bandOf(ielts);
-            const bandLabel = q.options.find(o => o.value === band).label;
-            addChatBubble('user', `${testType} ${s}점`);
-            addChatBubble('ai', `${testType} ${s}점은 <strong>IELTS 약 ${ielts.toFixed(1)}</strong>에 해당합니다. "${bandLabel}" 구간으로 분석을 진행할게요.`);
+            const bandLabel = tr(q.options.find(o => o.value === band).label);
+            addChatBubble('user', t('scoreUser')(testType, s));
+            addChatBubble('ai', t('scoreConverted')(testType, s, ielts.toFixed(1), bandLabel));
             document.getElementById('options-container').innerHTML = '';
             currentState[q.key] = band;
             currentState.ieltsEq = ielts;
@@ -1339,11 +1370,11 @@ const majorCategories = {
                         <h2 class="text-4xl font-bold tracking-tighter2 mb-6 text-white">${title}</h2>
                         <p class="text-lg text-gray-200 mb-10 leading-relaxed">${sub}</p>
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <button onclick="openConsultForm()" class="pill-btn bg-gold hover:bg-gold-deep text-black px-8 py-4 text-lg font-semibold w-full sm:w-auto shadow-lg shadow-yellow-500/30 transition-all transform hover:-translate-y-1"><i class="fa-solid fa-comments text-sm mr-2"></i>이 결과로 무료 상담 받기</button>
-                            <button onclick="copyResultLink(this)" class="pill-btn bg-white/10 border border-white/40 text-white hover:bg-white/20 px-8 py-4 text-lg font-medium w-full sm:w-auto backdrop-blur-sm"><i class="fa-solid fa-link text-sm mr-2"></i>결과 링크 복사</button>
-                            <button onclick="goHome()" class="pill-btn bg-white/10 border border-white/40 text-white hover:bg-white/20 px-8 py-4 text-lg font-medium w-full sm:w-auto backdrop-blur-sm">다시 진단하기</button>
+                            <button onclick="openConsultForm()" class="pill-btn bg-gold hover:bg-gold-deep text-black px-8 py-4 text-lg font-semibold w-full sm:w-auto shadow-lg shadow-yellow-500/30 transition-all transform hover:-translate-y-1"><i class="fa-solid fa-comments text-sm mr-2"></i>${t('resultCta')}</button>
+                            <button onclick="copyResultLink(this)" class="pill-btn bg-white/10 border border-white/40 text-white hover:bg-white/20 px-8 py-4 text-lg font-medium w-full sm:w-auto backdrop-blur-sm"><i class="fa-solid fa-link text-sm mr-2"></i>${t('resultCopy')}</button>
+                            <button onclick="goHome()" class="pill-btn bg-white/10 border border-white/40 text-white hover:bg-white/20 px-8 py-4 text-lg font-medium w-full sm:w-auto backdrop-blur-sm">${t('resultRestart')}</button>
                         </div>
-                        <p class="text-[13px] text-gray-300 mt-10">최종 지원 전에는 <a href="${STUDY_UK_URL}" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-white">Study UK</a> · <a href="https://www.gov.uk/student-visa" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-white">학생비자 공식 안내</a>와 각 대학 입학처에서 최신 요강을 확인하세요.</p>
+                        <p class="text-[13px] text-gray-300 mt-10">${t('ctaFoot')}</p>
                     </div>
                 </div>`;
         }
@@ -1352,27 +1383,26 @@ const majorCategories = {
             const list = (kind === 'pg')
                 ? [...ukBoards.pg, ...ukBoards.common]
                 : [...ukBoards.ug, ...ukBoards.common];
-            const label = kind === 'pg' ? '석사' : '학부';
             return `
                 <div class="section-light py-24 px-4 border-t border-gray-200">
                     <div class="max-w-4xl mx-auto">
                         <div class="text-center mb-12">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">영국 유학 공식 정보</h3>
-                            <p class="text-lg text-mute max-w-2xl mx-auto leading-relaxed">${label} 진학 준비에 꼭 필요한 공식 채널만 모았습니다. 입학요건과 비자 규정은 항상 공식 출처 기준이 우선입니다.</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('boardTitle')}</h3>
+                            <p class="text-lg text-mute max-w-2xl mx-auto leading-relaxed">${kind === 'pg' ? t('boardSubPg') : t('boardSubUg')}</p>
                         </div>
                         <div class="space-y-3 mb-10">
                             ${list.map(a => `
                                 <a href="${a.url}" target="_blank" rel="noopener"
                                    class="flex items-center justify-between gap-4 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl px-6 py-4 transition group">
                                     <span class="text-[15px] text-gray-700 group-hover:text-black text-left flex items-center gap-3">
-                                        <i class="fa-regular fa-file-lines text-royal shrink-0"></i>${a.title}
+                                        <i class="fa-regular fa-file-lines text-royal shrink-0"></i>${tr(a.title)}
                                     </span>
                                     <i class="fa-solid fa-arrow-right text-royal text-sm shrink-0 group-hover:translate-x-1 transition-transform"></i>
                                 </a>`).join('')}
                         </div>
                         <div class="text-center">
                             <a href="${STUDY_UK_URL}" target="_blank" rel="noopener" class="pill-btn bg-ink2 hover:bg-black text-white px-8 py-4 text-lg font-semibold inline-flex items-center gap-2">
-                                영국 정부 공식 유학 안내 (Study UK) <i class="fa-solid fa-arrow-right text-xs"></i>
+                                ${t('boardBtn')} <i class="fa-solid fa-arrow-right text-xs"></i>
                             </a>
                         </div>
                     </div>
@@ -1383,8 +1413,8 @@ const majorCategories = {
             return `
                 <footer class="bg-[#0b0b0c] py-12 text-center border-t border-gray-900">
                     <p class="text-white font-bold text-[15px] mb-4"><i class="fa-solid fa-map-location-dot text-gold mr-2"></i>UK Study Guide</p>
-                    <p class="text-xs text-gray-500 font-medium mb-2">ⓒ UK Study Guide. 정보 제공 목적으로 제작된 페이지입니다.</p>
-                    <p class="text-[11px] text-gray-600 leading-relaxed max-w-xl mx-auto px-4">본 사이트는 특정 유학원·기관과 무관한 무료 정보 페이지입니다. 대학 순위는 QS World University Rankings 2027(2026년 6월 발표), 과정·요건 정보는 각 대학 및 운영 기관 공시 기준이며 학기마다 변동될 수 있습니다. 최종 지원 전 반드시 각 대학·기관 공식 페이지에서 최신 요강을 확인하세요.</p>
+                    <p class="text-xs text-gray-500 font-medium mb-2">${t('footerCopy')}</p>
+                    <p class="text-[11px] text-gray-600 leading-relaxed max-w-xl mx-auto px-4">${t('footerDisclaimer')}</p>
                 </footer>`;
         }
 
@@ -1399,49 +1429,41 @@ const majorCategories = {
             resultSection.style.display = 'block';
             resultSection.classList.add('fade-in-up');
 
-            let isPreMaster = false;
-            let pathwayReason = "";
-            if (currentState.gpa.includes("3.0 미만") || currentState.gpa.includes("3.0~3.4")) {
-                isPreMaster = true;
-                pathwayReason = "학점(GPA) 보완이 필요하며, ";
-            }
-            if (currentState.sameMajor === "비전공자") {
-                isPreMaster = true;
-                pathwayReason += "학부와 석사 전공이 상이하여 기초 선수과목 이수가 강력히 권장됩니다. (단, 비즈니스/마케팅, 심리학 Conversion 과정 등 일부 전공은 Direct 지원이 예외적으로 가능할 수 있습니다).";
-            }
-            const pathwayTitle = isPreMaster ? "Pre-Master (석사 예비과정)" : "Direct (석사 직행 과정)";
-            const pathwaySub = isPreMaster
-                ? "성적 및 전공의 차이를 극복하고 명문대 진학을 보장받는 가장 확실한 루트입니다."
-                : "우수한 성적과 전공 적합성을 바탕으로 1년 만에 석사 학위를 취득하는 효율적인 루트입니다.";
+            const gpaNeed = currentState.gpa.includes("3.0 미만") || currentState.gpa.includes("3.0~3.4");
+            const nonMajor = currentState.sameMajor === "비전공자";
+            const isPreMaster = gpaNeed || nonMajor;
+            const pathwayReason = t('pmReason')(gpaNeed, nonMajor);
+            const pathwayTitle = isPreMaster ? t('pmTitle') : t('directTitle');
+            const pathwaySub = isPreMaster ? t('pmSub') : t('directSub');
             const majorInfo = majorData[currentState.major];
 
             const extraDocs = [];
-            if (currentState.sameMajor === '비전공자') {
-                extraDocs.push('<strong>전공 전환 사유를 담은 학업계획서(SOP)</strong>: 왜 이 분야로 바꾸는지 설득력 있는 스토리가 합격을 좌우합니다.');
-                extraDocs.push('학부 수강과목 상세 내역 (지원 전공과의 연관 과목 증빙용)');
+            if (nonMajor) {
+                extraDocs.push(t('xSop'));
+                extraDocs.push(t('xCourses'));
             }
             if (isPreMaster) {
-                extraDocs.push('<strong>프리마스터 · 프리세셔널 조건부 입학 서류</strong>: 영어 점수가 아직 부족해도 사전 등록(조건부 오퍼)이 가능합니다.');
-                extraDocs.push('졸업 전이라면 재학증명서 + 성적증명서 (졸업예정증명 포함)');
+                extraDocs.push(t('xPreDocs'));
+                extraDocs.push(t('xEnrol'));
             } else {
-                extraDocs.push('<strong>차별화된 학업계획서(SOP) · 영문 이력서(CV)</strong>: Direct 합격의 핵심 평가 요소이므로 완성도가 중요합니다.');
+                extraDocs.push(t('xDirectSop'));
             }
-            if (/미디어|저널리즘|박물관/.test(currentState.major)) extraDocs.push('포트폴리오 또는 글쓰기 샘플 (미디어 · 저널리즘 계열 필수)');
-            if (/비즈니스|마케팅|경영/.test(currentState.major)) extraDocs.push('MBA 등 일부 경영 과정 지원 시 경력증명서 (요구되는 경우)');
-            if (extraDocs.length === 0) extraDocs.push('전공별 세부 요구 서류는 학교 · 과정마다 다르므로, 각 대학 공식 코스 페이지에서 확인하세요.');
+            if (/미디어|저널리즘|박물관/.test(currentState.major)) extraDocs.push(t('xPortfolio'));
+            if (/비즈니스|마케팅|경영/.test(currentState.major)) extraDocs.push(t('xCareer'));
+            if (extraDocs.length === 0) extraDocs.push(t('xFallback'));
 
             let html = `
                 <div class="photo-header pt-24 pb-16 px-4" style="background-image:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.88)),url('assets/img/students-study.jpg')">
                     <div class="max-w-4xl mx-auto text-center">
-                        <span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-xs font-semibold tracking-widest text-gray-200 mb-6 uppercase">석사 진단 결과</span>
+                        <span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-xs font-semibold tracking-widest text-gray-200 mb-6 uppercase">${t('pgBadge')}</span>
                         <h2 class="text-4xl md:text-5xl font-bold tracking-tighter2 mb-6 leading-tight">
-                            당신을 위한 최적의 진학 경로는<br><span class="text-gold">"${pathwayTitle}"</span> 입니다.
+                            ${t('resultHeadPg')(pathwayTitle)}
                         </h2>
                         <p class="text-lg text-gray-400 max-w-2xl mx-auto font-light leading-relaxed mb-6">${pathwaySub}</p>
                         <div class="bg-[#1d1d1f] rounded-2xl p-6 text-left border border-[#2d2d2f] max-w-2xl mx-auto mb-8">
-                            <p class="text-sm text-gray-300 leading-relaxed"><strong class="text-white">진단 사유:</strong> ${isPreMaster
-                                ? pathwayReason + '<br><br>프리마스터를 이수할 경우, 아카데믹 영어 실력 향상은 물론 논문 작성법(Research Skill)을 미리 익힐 수 있어 본 과정 진학 후 우수한 성적을 거두는 데 매우 유리합니다.'
-                                : '지원 전공에 대한 높은 적합성과 양호한 성적을 보유하고 있습니다. 학업계획서(SOP)와 이력서(CV)에 본인만의 스토리를 전략적으로 담아 명문대 Direct 입학을 정조준합니다.'}</p>
+                            <p class="text-sm text-gray-300 leading-relaxed"><strong class="text-white">${t('diagReason')}</strong> ${isPreMaster
+                                ? pathwayReason + t('pmReasonExtra')
+                                : t('directReasonFull')}</p>
                         </div>
                         ${shareBtnHTML()}
                     </div>
@@ -1450,8 +1472,8 @@ const majorCategories = {
                 <div class="section-light py-20 px-4">
                     <div class="max-w-5xl mx-auto">
                         <div class="text-center mb-16">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${currentState.major} 추천 대학</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">선택하신 <strong class="text-ink2">${currentState.major}</strong> 전공은 ${majorInfo.desc}</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('recUnisTitle')(tr(currentState.major))}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('recUnisDesc')(tr(currentState.major), tr(majorInfo.desc))}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                             ${majorInfo.schools.map(school => `
@@ -1459,17 +1481,17 @@ const majorCategories = {
                                     <h4 class="text-2xl font-bold text-black tracking-tight mb-1">${school.name}</h4>
                                     <p class="text-royal font-semibold mb-4 text-sm">${school.course}</p>
                                     <div class="flex flex-wrap gap-2 mb-6">
-                                        <div class="info-badge"><i class="fa-solid fa-trophy text-yellow-500 mr-2 text-xs"></i> ${school.rank}</div>
-                                        <div class="info-badge"><i class="fa-solid fa-location-dot text-gray-400 mr-2 text-xs"></i> ${school.location}</div>
-                                        <div class="info-badge"><i class="fa-solid fa-sterling-sign text-gray-400 mr-2 text-xs"></i> 26/27학비: ${school.tuition}</div>
+                                        <div class="info-badge"><i class="fa-solid fa-trophy text-yellow-500 mr-2 text-xs"></i> ${tr(school.rank)}</div>
+                                        <div class="info-badge"><i class="fa-solid fa-location-dot text-gray-400 mr-2 text-xs"></i> ${tr(school.location)}</div>
+                                        <div class="info-badge"><i class="fa-solid fa-sterling-sign text-gray-400 mr-2 text-xs"></i> ${t('tuitionLine')(tr(school.tuition))}</div>
                                     </div>
-                                    <p class="text-[15px] text-gray-600 leading-relaxed mb-8 flex-grow">${school.desc}</p>
+                                    <p class="text-[15px] text-gray-600 leading-relaxed mb-8 flex-grow">${tr(school.desc)}</p>
                                     <div class="flex flex-col gap-2.5">
                                         <a href="${school.link}" target="_blank" rel="noopener" class="consult-banner text-center font-semibold py-3.5 px-4 w-full flex items-center justify-center gap-2 text-[15px]">
-                                            <i class="fa-solid fa-graduation-cap text-xs"></i> 공식 전공 과정 페이지 보기
+                                            <i class="fa-solid fa-graduation-cap text-xs"></i> ${t('courseLink')}
                                         </a>
-                                        <a href="${officialSchoolUrl(school.name)}" target="_blank" rel="noopener" class="uni-link-banner text-center font-semibold py-3 px-4 flex items-center justify-center gap-2 text-[14px]"><i class="fa-solid fa-globe text-[11px] opacity-70"></i> 대학 공식 홈페이지</a>
-                                        ${uniInfo(school.name) ? `<button onclick="showUniDetail(this.dataset.u)" data-u="${school.name.replace(/"/g, '&quot;')}" class="text-[13px] text-mute hover:text-royal font-medium py-1 transition">학교 소개 · 기본 정보 보기 <i class="fa-solid fa-chevron-right text-[10px]"></i></button>` : ''}
+                                        <a href="${officialSchoolUrl(school.name)}" target="_blank" rel="noopener" class="uni-link-banner text-center font-semibold py-3 px-4 flex items-center justify-center gap-2 text-[14px]"><i class="fa-solid fa-globe text-[11px] opacity-70"></i> ${t('uniHome')}</a>
+                                        ${uniInfo(school.name) ? `<button onclick="showUniDetail(this.dataset.u)" data-u="${school.name.replace(/"/g, '&quot;')}" class="text-[13px] text-mute hover:text-royal font-medium py-1 transition">${t('uniIntroBtn')} <i class="fa-solid fa-chevron-right text-[10px]"></i></button>` : ''}
                                     </div>
                                 </div>`).join('')}
                         </div>
@@ -1479,73 +1501,73 @@ const majorCategories = {
                 <div class="section-light py-24 px-4 border-t border-gray-200">
                     <div class="max-w-5xl mx-auto">
                         <div class="text-center mb-4">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">석사 예비과정, 프리마스터와 프리세셔널</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">성적·전공·영어 요건이 아직 부족해도, 아래 예비과정을 통해 명문대 석사로 진입할 수 있습니다.<br class="hidden sm:block">두 과정은 목적이 다르므로, 내 상황에 맞는 과정을 고르는 것이 핵심입니다.</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('prepTitle')}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('prepSub')}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-12">
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full ${isPreMaster ? 'ring-2 ring-gold' : ''}">
-                                ${isPreMaster ? '<span class="route-badge bg-gold text-black mb-4 self-start">진단 추천</span>' : ''}
+                                ${isPreMaster ? `<span class="route-badge bg-gold text-black mb-4 self-start">${t('diagChip')}</span>` : ''}
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-graduation-cap"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">Pre-Master (석사 예비과정)</h4>
-                                <p class="text-royal font-semibold mb-4 text-sm">전공 지식 + 아카데믹 영어를 함께 준비 · &ldquo;Graduate Diploma&rdquo;</p>
-                                <p class="text-[15px] text-gray-600 leading-relaxed mb-6">석사 시작 전 전공 관련 과목과 논문 작성법(Research Skill)을 미리 이수하는 과정입니다. 진학 보장형에 지원하면 <strong>프리마스터 오퍼와 석사 오퍼를 함께</strong> 받고, 과정 중 아카데믹 영어 성적으로 <strong>석사 진학용 IELTS를 대체</strong>할 수 있습니다.</p>
-                                <p class="text-[13px] font-semibold text-ink2 mb-2">이런 경우 권장됩니다</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('pmTitle')}</h4>
+                                <p class="text-royal font-semibold mb-4 text-sm">${t('pmCardSub')}</p>
+                                <p class="text-[15px] text-gray-600 leading-relaxed mb-6">${t('pmCardDesc')}</p>
+                                <p class="text-[13px] font-semibold text-ink2 mb-2">${t('whenRec')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed mb-6">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>학부 전공과 석사 전공이 다를 때</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>학부 GPA가 석사 진학 요건보다 낮을 때</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>아카데믹 영어·전공지식을 미리 끌어올리고 싶을 때</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pmWhen1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pmWhen2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pmWhen3')}</li>
                                 </ul>
                                 <div class="mt-auto pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p><strong class="text-ink2">기간</strong> 전공·기관에 따라 3 Terms(9·1월 시작) 또는 2 Terms(1·3월 시작). 2 Terms는 IELTS 0.5점 이상 더 요구됩니다.</p>
-                                    <p class="mt-2"><strong class="text-ink2">유의</strong> IELTS for UKVI 성적이 필요하며, 모든 전공에 개설되지는 않습니다. 진학 보장형은 전공·대학 선택이 다소 제한적입니다.</p>
+                                    <p>${t('pmMeta1')}</p>
+                                    <p class="mt-2">${t('pmMeta2')}</p>
                                 </div>
                             </div>
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-language"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">Pre-sessional (프리세셔널 영어)</h4>
-                                <p class="text-royal font-semibold mb-4 text-sm">대학이 직접 운영하는 학업 영어 과정</p>
-                                <p class="text-[15px] text-gray-600 leading-relaxed mb-6">조건부 입학허가(Conditional Offer)는 받았으나 <strong>IELTS가 입학 요건에 조금 못 미칠 때</strong> 대학 부설로 이수하는 과정입니다. 현재 IELTS로 프리세셔널을 수강하고 <strong>Final Test에 통과하면 석사 진학용 IELTS 점수 제출을 면제</strong>받을 수 있습니다.</p>
-                                <p class="text-[13px] font-semibold text-ink2 mb-2">이런 경우 권장됩니다</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('psTitle')}</h4>
+                                <p class="text-royal font-semibold mb-4 text-sm">${t('psSub')}</p>
+                                <p class="text-[15px] text-gray-600 leading-relaxed mb-6">${t('psDesc')}</p>
+                                <p class="text-[13px] font-semibold text-ink2 mb-2">${t('whenRec')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed mb-6">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>조건부 오퍼는 받았지만 IELTS가 부족할 때</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>단기간에 IELTS 점수를 더 올리기 부담스러울 때</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>실제 수업에 필요한 학업 영어·스터디 스킬을 키우고 싶을 때</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('psWhen1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('psWhen2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('psWhen3')}</li>
                                 </ul>
                                 <div class="mt-auto pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p><strong class="text-ink2">기간</strong> 현재 IELTS와 요구 IELTS의 점수 차이에 따라 4~46주로 결정됩니다. 차이가 클수록 기간이 길어집니다.</p>
-                                    <p class="mt-2"><strong class="text-ink2">유의</strong> 일반 IELTS가 아닌 IELTS for UKVI 성적이 필요하며, 과정 종료 후 비자 연장이 필요할 수 있습니다.</p>
+                                    <p>${t('psMeta1')}</p>
+                                    <p class="mt-2">${t('psMeta2')}</p>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-center text-[13px] text-mute mt-8 max-w-3xl mx-auto leading-relaxed">정리하면 <strong class="text-ink2">전공·학점이 부족</strong>하면 프리마스터, <strong class="text-ink2">영어 점수만 조금 부족</strong>하면 프리세셔널이 유리합니다. 두 과정 모두 조건부 오퍼로 사전 등록이 가능하며, 개설 여부는 각 대학 공식 페이지에서 확인할 수 있습니다.</p>
+                        <p class="text-center text-[13px] text-mute mt-8 max-w-3xl mx-auto leading-relaxed">${t('prepSummary')}</p>
                     </div>
                 </div>
 
                 <div class="section-light py-24 px-4 border-t border-gray-200">
                     <div class="max-w-5xl mx-auto">
                         <div class="text-center mb-12">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">지원 서류 & 타이밍 가이드</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">영국 석사는 <strong class="text-ink2">자격 · 서류 · 타이밍</strong> 세 가지가 합격을 좌우합니다.</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('docsTitle')}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('docsSub')}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-folder-open"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">공통 필수 서류</h4>
-                                <p class="text-mute text-sm mb-6">모든 영국 석사 지원자가 기본으로 준비해야 하는 서류입니다.</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('commonDocsTitle')}</h4>
+                                <p class="text-mute text-sm mb-6">${t('commonDocsSub')}</p>
                                 <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>영문 성적증명서</strong> (Academic Transcript)</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>영문 학위 · 졸업(예정)증명서</strong> (Degree Certificate)</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>학업계획서 · 자기소개서</strong> (Personal Statement · SOP)</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>추천서</strong> (Reference Letter) 1~2부</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>영문 이력서</strong> (CV / Resume)</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>여권 사본</strong> (Passport)</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>공인 영어성적</strong> (IELTS 등). <span class="text-mute">미보유 시 조건부 입학 후 추후 제출 가능</span></span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc1')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc2')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc3')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc4')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc5')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc6')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc7')}</span></li>
                                 </ul>
                             </div>
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-user-check"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${currentState.major.split(' / ')[0]} · ${pathwayTitle.split(' ')[0]} 맞춤 추가 서류</h4>
-                                <p class="text-mute text-sm mb-6">진단 결과와 선택하신 전공을 반영한, 학생분께 특히 중요한 서류입니다.</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('customDocsTitle')(tr(currentState.major).split(' / ')[0], pathwayTitle.split(' ')[0])}</h4>
+                                <p class="text-mute text-sm mb-6">${t('customDocsSub')}</p>
                                 <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
                                     ${extraDocs.map(d => `<li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${d}</span></li>`).join('')}
                                 </ul>
@@ -1554,15 +1576,15 @@ const majorCategories = {
                         <div class="mt-8 apple-card p-8 md:p-10 flex flex-col sm:flex-row gap-6 items-start">
                             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal text-xl shrink-0"><i class="fa-solid fa-clock"></i></div>
                             <div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-2">지원 타이밍, 빠를수록 유리합니다</h4>
-                                <p class="text-[15px] text-gray-700 leading-relaxed">영국 대학은 <strong>롤링 어드미션(Rolling Admission)</strong> 방식으로, 정원이 차는 순서대로 마감됩니다. 통상 <strong>입학 1년 전(전년도 9~10월)</strong> 원서가 열리며, 인기 과정은 조기 마감되므로 <strong>가능한 한 빨리 지원할수록 합격과 장학금에 유리</strong>합니다. 서류 준비에는 최소 1~2개월이 걸리는 만큼, 지금부터 준비를 시작하는 것을 권장합니다.</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-2">${t('timingTitle')}</h4>
+                                <p class="text-[15px] text-gray-700 leading-relaxed">${t('timingDesc')}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 ${boardHTML('pg')}
-                ${ctaHTML('이 결과, 저장해 두세요.', '위 결과는 2026-27 데이터에 기반한 1차 진단입니다.<br class="hidden sm:block">링크 하나로 저장·공유할 수 있으니, 함께 고민하는 가족 · 친구에게도 전달해 보세요.')}
+                ${ctaHTML(t('ctaTitle'), t('ctaSubPg'))}
                 ${footerHTML()}
             `;
             resultSection.innerHTML = html;
@@ -1576,52 +1598,34 @@ const majorCategories = {
 
         function ugRouteDecision(s) {
             const canIyo = ['hs3', 'grad', 'intl'].includes(s.status) && s.grades !== 'etc';
-            let key, title, sub, reason;
-            const fieldNote = ['biz', 'eng', 'cs'].includes(s.field)
-                ? 'IYO 개설이 가장 활발한 계열(경영 · 공학 · 컴퓨팅)을 희망하고 계셔서 2학년 편입 선택지가 넓은 편입니다.'
-                : '선택하신 계열은 IYO 개설 대학이 제한적이라, 전공 선택 폭이 넓은 파운데이션 경로가 유리할 수 있습니다.';
+            let key, title, sub;
             if (!canIyo) {
-                key = 'fnd'; title = '파운데이션 (Foundation)';
-                sub = '고2 수료 후 바로 지원할 수 있는 영국 학부 진학의 표준 루트입니다.';
-                reason = s.status === 'hs2'
-                    ? '고2 수료 예정 단계에서는 파운데이션이 유일하면서도 가장 빠른 경로입니다. 또래가 고3을 보내는 1년 동안 영국에서 파운데이션을 이수하고, 남들보다 빨리 학사 1학년에 진입할 수 있습니다.'
-                    : '내신 산출이 어려운 경우에도 파운데이션은 자체 평가 기준(인터뷰 · 내부 시험 등)으로 입학이 가능해 실질적인 진입 문이 가장 넓습니다.';
+                key = 'fnd'; title = t('fndTitle'); sub = t('fndSub');
             } else if (s.target === 'fast') {
-                key = 'iyo'; title = 'IYO (International Year One)';
-                sub = '1년 과정 수료 후 학사 2학년으로 편입, 총 유학 기간을 1년 단축하는 루트입니다.';
-                reason = '고교 졸업(예정) 자격과 내신을 갖추고 계셔서 IYO 지원이 가능하며, 빠른 학위 취득을 원하시는 목표와 가장 잘 맞습니다. ' + fieldNote;
+                key = 'iyo'; title = t('iyoTitle'); sub = t('iyoSub');
             } else if (s.target === 'top') {
-                key = 'fnd'; title = '파운데이션 중심 + A-level · IB 병행';
-                sub = '최상위권(옥스브리지 · 임페리얼 · LSE)은 IYO가 없어, 자체 파운데이션과 A-level · IB 전형을 함께 설계합니다.';
-                reason = '목표하시는 최상위권 대학은 파운데이션조차 자체 운영(UCL UPC, 워릭 IFP 등)이거나 A-level · IB 성적으로만 선발합니다. 상위권 자체 파운데이션을 축으로 하되, 성적에 따라 A-level 전형 병행 여부를 함께 검토해 보세요.';
+                key = 'fnd'; title = t('topTitle'); sub = t('topSub');
             } else {
-                key = 'both'; title = '파운데이션 · IYO 병행 전략';
-                sub = '두 경로 모두 지원 자격이 되어, 대학별로 유리한 쪽을 골라 지원하는 전략이 가능합니다.';
-                reason = '졸업(예정) 자격과 내신을 갖추고 계셔서 파운데이션(전공 폭 넓음)과 IYO(기간 단축)를 대학별로 조합할 수 있는 유리한 위치입니다. ' + fieldNote;
+                key = 'both'; title = t('bothTitle'); sub = t('bothSub');
             }
-            if (s.english === 'none') reason += ' 공인 영어 성적은 아직 없어도 조건부 오퍼가 가능하니, IELTS(UKVI) 목표 점수와 준비 일정을 먼저 세워 보세요.';
             return { key, title, sub, canIyo };
             }
 
         function ugRouteReason(s) {
             // ugRouteDecision과 동일 분기에서 reason만 반환 (렌더 편의용)
             const canIyo = ['hs3', 'grad', 'intl'].includes(s.status) && s.grades !== 'etc';
-            const fieldNote = ['biz', 'eng', 'cs'].includes(s.field)
-                ? 'IYO 개설이 가장 활발한 계열(경영 · 공학 · 컴퓨팅)을 희망하고 계셔서 2학년 편입 선택지가 넓은 편입니다.'
-                : '선택하신 계열은 IYO 개설 대학이 제한적이라, 전공 선택 폭이 넓은 파운데이션 경로가 유리할 수 있습니다.';
+            const fieldNote = ['biz', 'eng', 'cs'].includes(s.field) ? t('fieldNoteWide') : t('fieldNoteNarrow');
             let reason;
             if (!canIyo) {
-                reason = s.status === 'hs2'
-                    ? '고2 수료 예정 단계에서는 파운데이션이 유일하면서도 가장 빠른 경로입니다. 또래가 고3을 보내는 1년 동안 영국에서 파운데이션을 이수하고, 남들보다 빨리 학사 1학년에 진입할 수 있습니다.'
-                    : '내신 산출이 어려운 경우에도 파운데이션은 자체 평가 기준(인터뷰 · 내부 시험 등)으로 입학이 가능해 실질적인 진입 문이 가장 넓습니다.';
+                reason = s.status === 'hs2' ? t('rHs2') : t('rEtc');
             } else if (s.target === 'fast') {
-                reason = '고교 졸업(예정) 자격과 내신을 갖추고 계셔서 IYO 지원이 가능하며, 빠른 학위 취득을 원하시는 목표와 가장 잘 맞습니다. ' + fieldNote;
+                reason = t('rFast') + ' ' + fieldNote;
             } else if (s.target === 'top') {
-                reason = '목표하시는 최상위권 대학은 파운데이션조차 자체 운영(UCL UPC, 워릭 IFP 등)이거나 A-level · IB 성적으로만 선발합니다. 상위권 자체 파운데이션을 축으로 하되, 성적에 따라 A-level 전형 병행 여부를 함께 검토해 보세요.';
+                reason = t('rTop');
             } else {
-                reason = '졸업(예정) 자격과 내신을 갖추고 계셔서 파운데이션(전공 폭 넓음)과 IYO(기간 단축)를 대학별로 조합할 수 있는 유리한 위치입니다. ' + fieldNote;
+                reason = t('rBoth') + ' ' + fieldNote;
             }
-            if (s.english === 'none') reason += ' 공인 영어 성적은 아직 없어도 조건부 오퍼가 가능하니, IELTS(UKVI) 목표 점수와 준비 일정을 먼저 세워 보세요.';
+            if (s.english === 'none') reason += ' ' + t('engNoneAdd');
             return reason;
         }
 
@@ -1645,18 +1649,18 @@ const majorCategories = {
         function fndTypeRecommend(s) {
             if (s.grades === 'top') return {
                 types: ['own', 'private'],
-                reason: '내신 상위권(1~3등급대)이라 UCL · KCL · Warwick 등 자체 대학부설 파운데이션에 도전할 수 있는 성적대입니다. 여기에 성적에 맞춰 대부분의 대학에 오픈 초이스로 지원할 수 있는 사설 파운데이션을 병행하면, 상향 도전과 안전 지원을 동시에 가져갈 수 있습니다.'
+                reason: t('ftReasonTop')
             };
             if (s.grades === 'mid') return s.target === 'top' ? {
                 types: ['private'],
-                reason: '내신은 중위권이지만 상위권 대학을 목표하고 계시죠. 이 경우 파운데이션 수료 성적으로 대부분의 대학에 오픈 초이스 지원이 가능한 사설 파운데이션이 역전 폭이 가장 넓습니다.'
+                reason: t('ftReasonMidTop')
             } : {
                 types: ['guaranteed', 'private'],
-                reason: '내신 중위권(4~6등급대)이라면 수료 성적 충족 시 학부 진학이 보장되는 입학보장형 대학부설이 가장 안전한 선택입니다. 선택 폭이 넓은 사설 파운데이션을 함께 두면, 파운데이션 성적이 잘 나올 경우 더 높은 대학까지 노릴 수 있습니다.'
+                reason: t('ftReasonMid')
             };
             return {
                 types: ['private'],
-                reason: '내신 산출이 어렵거나 검정고시 출신이라면, 자체 평가(인터뷰 · 내부시험)로 입학 문이 넓고 소수정예 담임제로 관리해 주는 사설 파운데이션이 가장 현실적인 출발점입니다.'
+                reason: t('ftReasonEtc')
             };
         }
 
@@ -1666,21 +1670,21 @@ const majorCategories = {
             let rel = fieldMajorsOf(u);
             if (!rel.length && hasInfo) rel = uniInfo(u.n).majors.slice(0, 3);
             const routes = [];
-            if (u.grp === 'direct') routes.push(`<span class="route-badge bg-gray-100 text-gray-600"><i class="fa-solid fa-arrow-right text-[10px]"></i> A-level · IB 전형</span>`);
-            if (u.fnd) routes.push(`<span class="route-badge bg-blue-50 text-royal"><i class="fa-solid fa-layer-group text-[10px]"></i> ${u.fnd}</span>`);
+            if (u.grp === 'direct') routes.push(`<span class="route-badge bg-gray-100 text-gray-600"><i class="fa-solid fa-arrow-right text-[10px]"></i> ${t('routeAlevel')}</span>`);
+            if (u.fnd) routes.push(`<span class="route-badge bg-blue-50 text-royal"><i class="fa-solid fa-layer-group text-[10px]"></i> ${tr(u.fnd)}</span>`);
             if (u.iyo) routes.push(`<span class="route-badge bg-[#EAFFD0] text-[#3c6b00]"><i class="fa-solid fa-forward text-[10px]"></i> IYO</span>`);
             return `
                 <div class="apple-card px-5 py-3.5 md:px-6 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4">
                     <div class="flex-grow min-w-0 ${hasInfo ? 'cursor-pointer' : ''}" ${hasInfo ? `onclick="showUniDetail(this.dataset.u)" data-u="${u.n.replace(/"/g, '&quot;')}"` : ''}>
                         <div class="flex flex-wrap items-baseline gap-x-2">
                             <h4 class="text-[15px] font-bold text-black tracking-tight leading-snug">${u.n}</h4>
-                            <span class="text-mute text-[12px] font-medium">${u.k} · QS ${u.qs}위</span>
+                            <span class="text-mute text-[12px] font-medium">${t('uniSub')(u.k, u.qs)}</span>
                         </div>
-                        ${rel.length ? `<p class="text-[13px] text-royal font-semibold mt-1"><i class="fa-solid fa-graduation-cap mr-1.5 text-[11px]"></i>${rel.join(' · ')}</p>` : ''}
+                        ${rel.length ? `<p class="text-[13px] text-royal font-semibold mt-1"><i class="fa-solid fa-graduation-cap mr-1.5 text-[11px]"></i>${rel.map(tr).join(' · ')}</p>` : ''}
                         <div class="flex flex-wrap gap-1.5 mt-1.5">${routes.join('')}</div>
                     </div>
                     <div class="shrink-0">
-                        ${hasInfo ? `<button onclick="showUniDetail(this.dataset.u)" data-u="${u.n.replace(/"/g, '&quot;')}" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center">학교 안내 <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i></button>` : `<a href="${u.url}" target="_blank" rel="noopener" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center">공식 홈페이지 보기 <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i></a>`}
+                        ${hasInfo ? `<button onclick="showUniDetail(this.dataset.u)" data-u="${u.n.replace(/"/g, '&quot;')}" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center">${t('schoolInfo')} <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i></button>` : `<a href="${u.url}" target="_blank" rel="noopener" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center">${t('officialView')} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i></a>`}
                     </div>
                 </div>`;
         }
@@ -1707,13 +1711,13 @@ const majorCategories = {
             if (ugPage > pages) ugPage = pages;
             const slice = list.slice((ugPage - 1) * UG_PAGE_SIZE, ugPage * UG_PAGE_SIZE);
             document.getElementById('ug-cards').innerHTML = slice.map(ugCardHTML).join('');
-            document.getElementById('ug-count').innerText = `총 ${list.length}개교 · ${ugPage} / ${pages} 페이지`;
+            document.getElementById('ug-count').innerText = t('countLine')(list.length, ugPage, pages);
             const pager = document.getElementById('ug-pager');
             if (pager) {
                 pager.innerHTML = pages <= 1 ? '' : [
-                    `<button onclick="setUgPage(${Math.max(1, ugPage - 1)})" class="filter-chip ${ugPage === 1 ? 'opacity-40 pointer-events-none' : ''}" aria-label="이전 페이지"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>`,
+                    `<button onclick="setUgPage(${Math.max(1, ugPage - 1)})" class="filter-chip ${ugPage === 1 ? 'opacity-40 pointer-events-none' : ''}" aria-label="${t('prevPage')}"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>`,
                     ...Array.from({ length: pages }, (_, i) => `<button onclick="setUgPage(${i + 1})" class="filter-chip ${ugPage === i + 1 ? 'active' : ''}">${i + 1}</button>`),
-                    `<button onclick="setUgPage(${Math.min(pages, ugPage + 1)})" class="filter-chip ${ugPage === pages ? 'opacity-40 pointer-events-none' : ''}" aria-label="다음 페이지"><i class="fa-solid fa-chevron-right text-[11px]"></i></button>`
+                    `<button onclick="setUgPage(${Math.min(pages, ugPage + 1)})" class="filter-chip ${ugPage === pages ? 'opacity-40 pointer-events-none' : ''}" aria-label="${t('nextPage')}"><i class="fa-solid fa-chevron-right text-[11px]"></i></button>`
                 ].join('');
             }
         }
@@ -1730,25 +1734,26 @@ const majorCategories = {
             const cm = currentState.customMajor || null; // 직접 입력한 특수 전공명
             const rec = d.key; // 'fnd' | 'iyo' | 'both'
             const ft = fndTypeRecommend(currentState); // 성적별 파운데이션 유형 추천 (복수 가능)
-            const ftRing = t => ft.types.includes(t) ? 'ring-2 ring-gold' : '';
-            const ftChip = (t, fallback) => {
-                if (!ft.types.includes(t)) return `<span class="route-badge bg-gray-100 text-gray-600 mb-4 self-start">${fallback}</span>`;
-                const label = (t === 'private' && ft.types.length > 1) ? '병행 추천 · 폭넓은 지원' : '내 성적 추천';
+            /* 콜백 매개변수가 번역 함수 t()를 가리지 않도록 ty로 둔다. */
+            const ftRing = ty => ft.types.includes(ty) ? 'ring-2 ring-gold' : '';
+            const ftChip = (ty, fallbackKey) => {
+                if (!ft.types.includes(ty)) return `<span class="route-badge bg-gray-100 text-gray-600 mb-4 self-start">${t(fallbackKey)}</span>`;
+                const label = (ty === 'private' && ft.types.length > 1) ? t('chipBoth') : t('chipMine');
                 return `<span class="route-badge bg-gold text-black mb-4 self-start">${label}</span>`;
             };
             const ring = k => (rec === k || rec === 'both' && (k === 'fnd' || k === 'iyo')) ? 'ring-2 ring-gold' : '';
-            const recChip = k => (rec === k || rec === 'both' && (k === 'fnd' || k === 'iyo')) ? '<span class="route-badge bg-gold text-black mb-4">추천 경로</span>' : '<span class="route-badge bg-gray-100 text-gray-500 mb-4">경로 안내</span>';
+            const recChip = k => (rec === k || rec === 'both' && (k === 'fnd' || k === 'iyo')) ? `<span class="route-badge bg-gold text-black mb-4">${t('recChip')}</span>` : `<span class="route-badge bg-gray-100 text-gray-500 mb-4">${t('infoChip')}</span>`;
 
             let html = `
                 <div class="photo-header pt-24 pb-16 px-4" style="background-image:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.88)),url('assets/img/quad-sunset.jpg')">
                     <div class="max-w-4xl mx-auto text-center">
-                        <span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-xs font-semibold tracking-widest text-gray-200 mb-6 uppercase">학부 진단 결과</span>
+                        <span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-xs font-semibold tracking-widest text-gray-200 mb-6 uppercase">${t('ugBadge')}</span>
                         <h2 class="text-4xl md:text-5xl font-bold tracking-tighter2 mb-6 leading-tight">
-                            당신을 위한 학부 진학 경로는<br><span class="text-gold">"${d.title}"</span> 입니다.
+                            ${t('resultHeadUg')(d.title)}
                         </h2>
                         <p class="text-lg text-gray-400 max-w-2xl mx-auto font-light leading-relaxed mb-6">${d.sub}</p>
                         <div class="bg-[#1d1d1f] rounded-2xl p-6 text-left border border-[#2d2d2f] max-w-2xl mx-auto mb-8">
-                            <p class="text-sm text-gray-300 leading-relaxed"><strong class="text-white">진단 사유:</strong> ${reason}</p>
+                            <p class="text-sm text-gray-300 leading-relaxed"><strong class="text-white">${t('diagReason')}</strong> ${reason}</p>
                         </div>
                         ${shareBtnHTML()}
                     </div>
@@ -1759,14 +1764,14 @@ const majorCategories = {
                     <div class="max-w-5xl mx-auto">
                         <div class="apple-card p-8 md:p-10">
                             <div class="flex flex-wrap items-center gap-3 mb-3">
-                                <span class="route-badge bg-gold text-black">${cm ? '입력 전공' : '선택 계열'}</span>
-                                <h3 class="text-2xl font-bold text-black tracking-tight">${cm ? `'${cm}', 가장 가까운 계열은 ${fm.label}` : `${fm.label} 추천 전공`}</h3>
+                                <span class="route-badge bg-gold text-black">${cm ? t('chipInput') : t('chipField')}</span>
+                                <h3 class="text-2xl font-bold text-black tracking-tight">${cm ? t('fmTitleCustom')(cm, tr(fm.label)) : t('fmTitleField')(tr(fm.label))}</h3>
                             </div>
                             <p class="text-mute text-[15px] mb-6 leading-relaxed">${cm
-                                ? `입력하신 '<strong class="text-ink2">${cm}</strong>' 전공은 <strong class="text-ink2">${fm.label}</strong> 계열 기준으로 분석했습니다. 아래는 이 계열의 대표 전공이며, '${cm}' 개설 대학과 정확한 코스명은 각 대학 공식 페이지에서 확인하세요.`
-                                : `선택하신 계열에서 영국 학부로 많이 진학하는 대표 전공입니다. 세부 전공과 개설 대학은 아래 <strong class="text-ink2">대학별 공식 페이지 링크</strong>에서 정확히 확인하실 수 있습니다.`}</p>
+                                ? t('fmDescCustom')(cm, tr(fm.label))
+                                : t('fmDescField')}</p>
                             <div class="flex flex-wrap gap-2.5">
-                                ${fm.majors.map(m => `<span class="info-badge text-[14px] py-2"><i class="fa-solid fa-graduation-cap text-royal mr-2 text-xs"></i>${m}</span>`).join('')}
+                                ${fm.majors.map(m => `<span class="info-badge text-[14px] py-2"><i class="fa-solid fa-graduation-cap text-royal mr-2 text-xs"></i>${tr(m)}</span>`).join('')}
                             </div>
                         </div>
                     </div>
@@ -1775,79 +1780,79 @@ const majorCategories = {
                 <div class="section-light py-20 px-4">
                     <div class="max-w-5xl mx-auto">
                         <div class="text-center mb-14">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">영국 학부, 3가지 진입 경로</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">한국 고교 과정은 영국 13년제(A-level)와 달라, 대부분 아래 준비 과정을 거쳐 학사에 진입합니다.</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('routes3Title')}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('routes3Sub')}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="apple-card p-8 flex flex-col ${ring('fnd')}">
                                 ${recChip('fnd')}
-                                <h4 class="text-xl font-bold text-black mb-1">파운데이션</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">1년 수료 → 학사 1학년 입학</p>
+                                <h4 class="text-xl font-bold text-black mb-1">${t('fndCardTitle')}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t('fndCardSub')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>고2 수료 후 지원 가능, 가장 빠른 시작</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>통상 내신 + IELTS(UKVI) 4.5 ~ 5.5 수준</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>전공 선택 폭이 가장 넓음 (인문 ~ 이공 전반)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>수료 성적 충족 시 연계 대학 진학 보장형 다수</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi3')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi4')}</li>
                                 </ul>
                             </div>
                             <div class="apple-card p-8 flex flex-col ${ring('iyo')}">
                                 ${recChip('iyo')}
-                                <h4 class="text-xl font-bold text-black mb-1">IYO</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">1년 수료 → 학사 2학년 편입</p>
+                                <h4 class="text-xl font-bold text-black mb-1">${t('iyoCardTitle')}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t('iyoCardSub')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i><strong>고교 졸업 후 대학을 1년 정도 이수한 학생에게 특히 추천</strong> (2학년 편입 구조)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>고교 졸업(예정) + 내신 요건 필요</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>통상 IELTS(UKVI) 5.5 ~ 6.0 수준</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>기간이 짧은 편입 과정이라 <strong>개설 전공이 제한적</strong> (경영 · 공학 · 컴퓨팅 중심)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>총 유학 기간 1년 단축 = 학비 · 생활비 절감</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi3')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>${t('iyoLi4')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi5')}</li>
                                 </ul>
                             </div>
                             <div class="apple-card p-8 flex flex-col ${ring('direct')}">
                                 ${recChip('direct')}
-                                <h4 class="text-xl font-bold text-black mb-1">A-level · IB 전형</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">정규 고교과정 성적 → 학사 1학년</p>
+                                <h4 class="text-xl font-bold text-black mb-1">${t('dirCardTitle')}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t('dirCardSub')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>해외고 · 국제학교 출신에게 열린 경로</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>옥스브리지 · 임페리얼 · LSE는 이 경로만 운영</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>UCAS를 통한 지원 · 최대 5개교</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>IELTS 6.5 ~ 7.0+ 등 높은 요건</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi3')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi4')}</li>
                                 </ul>
                                 <div class="mt-5 pt-4 border-t border-gray-100 bg-amber-50 -mx-8 -mb-8 px-8 py-4 rounded-b-2xl">
-                                    <p class="text-[13px] text-gray-700 leading-relaxed"><i class="fa-solid fa-circle-info text-royal mr-1.5"></i><strong>A-level · IB 전형 입학</strong>은 파운데이션 · IYO와 진행 방식이 다릅니다. 해당 경로는 <a href="https://www.ucas.com/" target="_blank" rel="noopener" class="underline font-semibold">UCAS 공식 안내</a>를 참고하세요.</p>
+                                    <p class="text-[13px] text-gray-700 leading-relaxed">${t('dirNote')}</p>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-center text-[13px] text-mute mt-8">파운데이션 · IYO 학비는 기관과 전공에 따라 대략 <strong class="text-ink2">연 £20,000 ~ £30,000</strong> 수준이며 매년 변동됩니다. 정확한 금액은 각 기관 공식 페이지의 최신 요강에서 확인하세요.</p>
+                        <p class="text-center text-[13px] text-mute mt-8">${t('ugTuitionNote')}</p>
                     </div>
                 </div>
 
                 <div class="section-light py-24 px-4 border-t border-gray-200">
                     <div class="max-w-5xl mx-auto">
                         <div class="text-center mb-12">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">학부 지원 준비 가이드</h3>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('ugPrepTitle')}</h3>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-folder-open"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">기본 준비 서류</h4>
-                                <p class="text-mute text-sm mb-6">파운데이션 · IYO 지원의 공통 기본 서류입니다.</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugDocsTitle')}</h4>
+                                <p class="text-mute text-sm mb-6">${t('ugDocsSub')}</p>
                                 <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>영문 고교 성적증명서</strong> (검정고시는 성적증명으로 대체)</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>영문 재학 · 졸업(예정)증명서</strong></span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>여권 사본</strong></span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>IELTS for UKVI</strong>: <span class="text-mute">미보유 시 조건부 오퍼 후 제출 가능</span></span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span><strong>간단한 자기소개 · 학업 계획</strong> (기관별 요구 시)</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc1')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc2')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc3')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc4')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc5')}</span></li>
                                 </ul>
                             </div>
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-clock"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">지원 타이밍</h4>
-                                <p class="text-mute text-sm mb-6">파운데이션 · IYO는 대학 본과와 입학 시점 구조가 다릅니다.</p>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugTimingTitle')}</h4>
+                                <p class="text-mute text-sm mb-6">${t('ugTimingSub')}</p>
                                 <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>주요 기관은 <strong>9월 외에 1월 · 4월 등 복수 입학 시점</strong>을 운영해 학기 중 합류도 가능합니다.</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>인기 대학 연계 과정은 <strong>정원 마감이 빠르므로 6개월 ~ 1년 전 지원</strong>을 권장합니다.</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>비자(학생비자) 수속에 통상 <strong>1 ~ 2개월</strong>이 소요되므로 역산해 준비합니다.</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>고2 재학생은 <strong>수료 직후 9월 입학</strong>을 목표로 지금부터 설계하는 것이 이상적입니다.</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime1')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime2')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime3')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime4')}</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -1857,95 +1862,95 @@ const majorCategories = {
                 <div class="section-light py-24 px-4 border-t border-gray-200">
                     <div class="max-w-6xl mx-auto">
                         <div class="text-center mb-4">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">파운데이션, 어떤 종류를 고를까?</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">같은 &ldquo;파운데이션&rdquo;이라도 <strong class="text-ink2">사설</strong> · <strong class="text-ink2">자체 대학부설</strong> · <strong class="text-ink2">입학보장형 대학부설</strong>로 나뉘며,<br class="hidden sm:block">내신 성적대와 목표에 따라 유리한 유형이 달라집니다.</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('ftTitle')}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('ftSub')}</p>
                         </div>
                         <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3 mt-10 mb-8 text-[13px] md:text-[14px] font-semibold">
-                            <span class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-gray-500"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] flex items-center justify-center">1</span> 파운데이션 적합 진단</span>
+                            <span class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-gray-500"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] flex items-center justify-center">1</span> ${t('ftStep1')}</span>
                             <i class="fa-solid fa-arrow-right text-gray-300 text-xs"></i>
-                            <span class="inline-flex items-center gap-2 bg-gold rounded-full px-4 py-2 text-black"><span class="w-5 h-5 rounded-full bg-black text-white text-[11px] flex items-center justify-center">2</span> 내 성적에 맞는 기관 유형</span>
+                            <span class="inline-flex items-center gap-2 bg-gold rounded-full px-4 py-2 text-black"><span class="w-5 h-5 rounded-full bg-black text-white text-[11px] flex items-center justify-center">2</span> ${t('ftStep2')}</span>
                             <i class="fa-solid fa-arrow-right text-gray-300 text-xs"></i>
-                            <span class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-gray-500"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] flex items-center justify-center">3</span> 전공별 추천 학교 확인</span>
+                            <span class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-gray-500"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] flex items-center justify-center">3</span> ${t('ftStep3')}</span>
                         </div>
                         <div class="max-w-3xl mx-auto bg-[#fffbeb] border border-yellow-200 rounded-2xl p-6 mb-10">
-                            <p class="text-[14px] text-gray-800 leading-relaxed"><i class="fa-solid fa-wand-magic-sparkles text-gold-deep mr-2"></i><strong>진단 결과 추천:</strong> ${ft.reason}</p>
+                            <p class="text-[14px] text-gray-800 leading-relaxed"><i class="fa-solid fa-wand-magic-sparkles text-gold-deep mr-2"></i><strong>${t('ftRecLabel')}</strong> ${ft.reason}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="apple-card p-8 flex flex-col ${ftRing('private')}">
-                                ${ftChip('private', '오픈 초이스형')}
-                                <h4 class="text-xl font-bold text-black mb-1">사설 파운데이션</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">오픈 초이스 · 소수정예 관리형</p>
+                                ${ftChip('private', 'chipOpen')}
+                                <h4 class="text-xl font-bold text-black mb-1">${t('pvTitle')}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t('pvSub')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed flex-grow">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>연 2회 입학 (9월 / 1월)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>입학 조건 까다롭지 않음 · IELTS 4.5 ~ 5.5</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>성적에 맞춰 대부분의 대학에 <strong>오픈 초이스로 지원</strong> (진학률 최대)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>한 반 최대 10명 소수정예 · 담임제 성적/생활/진학 관리</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>선호 학교 · 전공 · 지역을 폭넓게 선택 가능</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi3')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi4')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi5')}</li>
                                 </ul>
                                 <div class="mt-5 pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p class="mt-2"><strong class="text-ink2">추천</strong> 내신은 낮지만 상위권을 목표하거나, 목표 학교 · 전공이 아직 정해지지 않았거나, 학습 · 생활 관리에 도움이 필요한 학생</p>
+                                    <p class="mt-2">${t('pvRec')}</p>
                                 </div>
                             </div>
                             <div class="apple-card p-8 flex flex-col ${ftRing('own')}">
-                                ${ftChip('own', '대학부설 · 자체형')}
-                                <h4 class="text-xl font-bold text-black mb-1">자체 대학부설</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">상위권 대학 캠퍼스에서 수학</p>
+                                ${ftChip('own', 'chipOwn')}
+                                <h4 class="text-xl font-bold text-black mb-1">${t('ownTitle')}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t('ownSub')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed flex-grow">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>연 1회 입학 (9월)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>입학 조건 내신 3~4등급 이상(학교별 상이) · IELTS 5.5 이상</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>목표 대학 캠퍼스 생활을 미리 경험(기숙사 · 도서관 등) · 높은 수업 수준</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>해당 학교 진학 보장은 없음. 성적 우수 시 진학률 상승(평균 50%)</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('ownLi1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('ownLi2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('ownLi3')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>${t('ownLi4')}</li>
                                 </ul>
                                 <div class="mt-5 pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p class="mt-2"><strong class="text-ink2">추천</strong> 자기주도 학습 능력이 뛰어나고 스스로 생활 · 성적 관리를 잘하는 내신 상위권 학생</p>
+                                    <p class="mt-2">${t('ownRec')}</p>
                                 </div>
                             </div>
                             <div class="apple-card p-8 flex flex-col ${ftRing('guaranteed')}">
-                                ${ftChip('guaranteed', '대학부설 · 입학보장형')}
-                                <h4 class="text-xl font-bold text-black mb-1">입학보장형 대학부설</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">진학 보장으로 안전하게</p>
+                                ${ftChip('guaranteed', 'chipGuar')}
+                                <h4 class="text-xl font-bold text-black mb-1">${t('guTitle')}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t('guSub')}</p>
                                 <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed flex-grow">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>연 2회 입학 (9월 / 1월)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>입학 조건 내신 5~6등급 이상(학교별 상이) · IELTS 5.0 ~ 5.5</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i><strong>성적 충족 시 학부 진학 보장</strong>(진학률 85~95%)</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>처음 정한 대학 · 일부 파트너 대학 외로는 진학이 어려움</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('guLi1')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('guLi2')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('guLi3')}</li>
+                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>${t('guLi4')}</li>
                                 </ul>
                                 <div class="mt-5 pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p class="mt-2"><strong class="text-ink2">추천</strong> 중상위권 학교로 안전하게 입학하기를 희망하는 학생</p>
+                                    <p class="mt-2">${t('guRec')}</p>
                                 </div>
                             </div>
                         </div>
-                        
-                        <p class="text-center text-[14px] text-gray-700 mt-10 max-w-3xl mx-auto leading-relaxed"><span class="inline-flex items-center gap-2 font-semibold text-ink2"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] inline-flex items-center justify-center">3</span> 다음 단계</span>: 아래에서 ${fm ? '<strong class="text-ink2">' + fm.label + '</strong> 전공으로' : '희망 전공으로'} 진학 가능한 추천 학교를 확인하고, 내신 · 목표에 맞춰 각 기관 공식 페이지의 최신 요강과 비교해 보세요.</p>
+
+                        <p class="text-center text-[14px] text-gray-700 mt-10 max-w-3xl mx-auto leading-relaxed">${t('nextStepLine')(fm ? tr(fm.label) : null)}</p>
                     </div>
                 </div>
 
                 <div class="section-light py-20 px-4 border-t border-gray-200">
                     <div class="max-w-4xl mx-auto">
                         <div class="text-center mb-10">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${fm ? fm.label + ' 계열 ' : ''}추천 영국 대학</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">각 대학 아래에 ${fm ? '<strong class="text-ink2">' + fm.label + ' 계열에서 진학 가능한 전공명</strong>' : '진학 가능한 전공명'}을 함께 표시했습니다.<br class="hidden sm:block">대학 이름이나 '학교 안내'를 누르면 학교 소개 · 우세 전공 · 진입 경로를 확인할 수 있습니다.</p>
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('listTitle')(fm ? tr(fm.label) : null)}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('listSub')(fm ? tr(fm.label) : null)}</p>
                         </div>
                         <div id="ug-list-top" class="flex flex-wrap items-center justify-center gap-2.5 mb-3">
-                            <button class="filter-chip" data-f="all" onclick="renderUgCards('all')">전체</button>
-                            <button class="filter-chip" data-f="iyo" onclick="renderUgCards('iyo')">IYO 운영</button>
-                            <button class="filter-chip" data-f="fnd" onclick="renderUgCards('fnd')">파운데이션 운영</button>
-                            <button class="filter-chip" data-f="direct" onclick="renderUgCards('direct')">A-level · IB 전형</button>
+                            <button class="filter-chip" data-f="all" onclick="renderUgCards('all')">${t('filterAll')}</button>
+                            <button class="filter-chip" data-f="iyo" onclick="renderUgCards('iyo')">${t('filterIyo')}</button>
+                            <button class="filter-chip" data-f="fnd" onclick="renderUgCards('fnd')">${t('filterFnd')}</button>
+                            <button class="filter-chip" data-f="direct" onclick="renderUgCards('direct')">${t('filterDirect')}</button>
                         </div>
                         <div class="flex flex-wrap items-center justify-center gap-2.5 mb-4">
-                            <span class="text-[12px] text-mute font-semibold mr-1">정렬</span>
-                            <button class="filter-chip" data-s="qs" onclick="setUgSort('qs')"><i class="fa-solid fa-trophy text-[11px] mr-1"></i>QS 랭킹순</button>
-                            <button class="filter-chip" data-s="name" onclick="setUgSort('name')"><i class="fa-solid fa-arrow-down-a-z text-[11px] mr-1"></i>이름순 A-Z</button>
-                            <button class="filter-chip" data-s="kname" onclick="setUgSort('kname')"><i class="fa-solid fa-font text-[11px] mr-1"></i>가나다순</button>
+                            <span class="text-[12px] text-mute font-semibold mr-1">${t('sortLabel')}</span>
+                            <button class="filter-chip" data-s="qs" onclick="setUgSort('qs')"><i class="fa-solid fa-trophy text-[11px] mr-1"></i>${t('sortQs')}</button>
+                            <button class="filter-chip" data-s="name" onclick="setUgSort('name')"><i class="fa-solid fa-arrow-down-a-z text-[11px] mr-1"></i>${t('sortAz')}</button>
+                            <button class="filter-chip" data-s="kname" onclick="setUgSort('kname')"><i class="fa-solid fa-font text-[11px] mr-1"></i>${t('sortKo')}</button>
                         </div>
-                        <p class="text-center text-[13px] text-mute mb-10"><span id="ug-count"></span> · 과정 개설 전공과 요건은 학기마다 변동될 수 있습니다</p>
+                        <p class="text-center text-[13px] text-mute mb-10"><span id="ug-count"></span> · ${t('countNote')}</p>
                         <div id="ug-cards" class="space-y-3"></div>
                         <div id="ug-pager" class="flex flex-wrap items-center justify-center gap-2 mt-8"></div>
                     </div>
                 </div>
 
                 ${boardHTML('ug')}
-                ${ctaHTML('이 결과, 저장해 두세요.', '위 결과는 QS 2027 데이터 기반의 1차 진단입니다.<br class="hidden sm:block">링크 하나로 저장·공유할 수 있으니, 함께 고민하는 가족 · 친구에게도 전달해 보세요.')}
+                ${ctaHTML(t('ctaTitle'), t('ctaSubUg'))}
                 ${footerHTML()}
             `;
             resultSection.innerHTML = html;
@@ -1953,6 +1958,23 @@ const majorCategories = {
             renderUgCards(rec === 'iyo' ? 'iyo' : rec === 'fnd' ? 'fnd' : 'all');
             history.replaceState(null, '', '#p=' + encodeURIComponent(JSON.stringify({ t: track, s: currentState })));
             window.scrollTo({ top: 0 });
+        }
+
+        /* 언어를 바꿨을 때 JS로 그려진 화면(질문·결과)을 현재 언어로 다시 그린다.
+           i18n.js의 applyLang()이 마지막에 호출한다. 지난 대화 버블은 그대로 두고
+           현재 질문 버블·선택지만 다시 그린다. */
+        function refreshDynamicView() {
+            const rs = document.getElementById('result-section');
+            if (rs && rs.style.display === 'block') { showResult(); return; }
+            const cs = document.getElementById('chat-section');
+            if (cs && cs.style.display === 'flex' && flowStack.length && step < activeQuestions().length) {
+                const snap = flowStack[flowStack.length - 1];
+                const history = document.getElementById('chat-history');
+                while (history.children.length > snap.childCount) history.lastElementChild.remove();
+                flowStack.pop();                      // askQuestion이 다시 push
+                document.getElementById('options-container').innerHTML = '';
+                askQuestion();
+            }
         }
 
         // ── 공유 링크(#p=)로 접속 시 결과 자동 복원 ──────────────────
