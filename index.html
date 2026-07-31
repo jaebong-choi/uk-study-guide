@@ -68,7 +68,7 @@
     </script>
 
     <!-- 한국어/English 사전 · 번역 함수 (t · tr · applyLang · setLang) -->
-    <script src="i18n.js?v=20260815"></script>
+    <script src="i18n.js?v=20260816"></script>
 
     <!-- Tally 팝업 위젯 (무료 상담 신청 폼) -->
     <script async src="https://tally.so/widgets/embed.js"></script>
@@ -1727,8 +1727,9 @@ const majorCategories = {
                         ${rel.length ? `<p class="text-[13px] text-royal font-semibold mt-1"><i class="fa-solid fa-graduation-cap mr-1.5 text-[11px]"></i>${rel.map(tr).join(' · ')}</p>` : ''}
                         <div class="flex flex-wrap gap-1.5 mt-1.5">${routes.join('')}</div>
                     </div>
-                    <div class="shrink-0">
-                        ${hasInfo ? `<button onclick="showUniDetail(this.dataset.u)" data-u="${u.n.replace(/"/g, '&quot;')}" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center">${t('schoolInfo')} <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i></button>` : `<a href="${u.url}" target="_blank" rel="noopener" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center">${t('officialView')} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i></a>`}
+                    <div class="shrink-0 flex flex-col sm:flex-row gap-2">
+                        ${hasInfo ? `<button onclick="showUniDetail(this.dataset.u)" data-u="${u.n.replace(/"/g, '&quot;')}" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center whitespace-nowrap">${t('schoolInfo')} <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i></button>` : `<a href="${u.url}" target="_blank" rel="noopener" class="uni-link-banner text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center whitespace-nowrap">${t('officialView')} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i></a>`}
+                        ${hubUniUrl(u.n) ? `<a href="${hubUniUrl(u.n)}" target="_blank" rel="noopener" class="uni-link-banner is-primary text-center font-semibold py-2.5 px-4 text-[13px] flex items-center gap-1.5 w-full sm:w-auto justify-center whitespace-nowrap">${t('uniDetailBtn')} <i class="fa-solid fa-table-list text-[10px] opacity-80"></i></a>` : ''}
                     </div>
                 </div>`;
         }
@@ -1821,6 +1822,30 @@ const majorCategories = {
                     </div>
                 </div>` : ''}
 
+                <div class="section-light py-20 px-4 border-t border-gray-200">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="text-center mb-10">
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('listTitle')(fm ? tr(fm.label) : null)}</h3>
+                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('listSub')(fm ? tr(fm.label) : null)}</p>
+                        </div>
+                        <div id="ug-list-top" class="flex flex-wrap items-center justify-center gap-2.5 mb-3">
+                            <button class="filter-chip" data-f="all" onclick="renderUgCards('all')">${t('filterAll')}</button>
+                            <button class="filter-chip" data-f="iyo" onclick="renderUgCards('iyo')">${t('filterIyo')}</button>
+                            <button class="filter-chip" data-f="fnd" onclick="renderUgCards('fnd')">${t('filterFnd')}</button>
+                            <button class="filter-chip" data-f="direct" onclick="renderUgCards('direct')">${t('filterDirect')}</button>
+                        </div>
+                        <div class="flex flex-wrap items-center justify-center gap-2.5 mb-4">
+                            <span class="text-[12px] text-mute font-semibold mr-1">${t('sortLabel')}</span>
+                            <button class="filter-chip" data-s="qs" onclick="setUgSort('qs')"><i class="fa-solid fa-trophy text-[11px] mr-1"></i>${t('sortQs')}</button>
+                            <button class="filter-chip" data-s="name" onclick="setUgSort('name')"><i class="fa-solid fa-arrow-down-a-z text-[11px] mr-1"></i>${t('sortAz')}</button>
+                            <button class="filter-chip" data-s="kname" onclick="setUgSort('kname')"><i class="fa-solid fa-font text-[11px] mr-1"></i>${t('sortKo')}</button>
+                        </div>
+                        <p class="text-center text-[13px] text-mute mb-10"><span id="ug-count"></span> · ${t('countNote')}</p>
+                        <div id="ug-cards" class="space-y-3"></div>
+                        <div id="ug-pager" class="flex flex-wrap items-center justify-center gap-2 mt-8"></div>
+                    </div>
+                </div>
+
                 <div class="section-light py-20 px-4">
                     <div class="max-w-5xl mx-auto">
                         <div class="text-center mb-14">
@@ -1867,39 +1892,6 @@ const majorCategories = {
                             </div>
                         </div>
                         <p class="text-center text-[13px] text-mute mt-8">${t('ugTuitionNote')}</p>
-                    </div>
-                </div>
-
-                <div class="section-light py-24 px-4 border-t border-gray-200">
-                    <div class="max-w-5xl mx-auto">
-                        <div class="text-center mb-12">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('ugPrepTitle')}</h3>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                            <div class="apple-card p-8 md:p-10 flex flex-col h-full">
-                                <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-folder-open"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugDocsTitle')}</h4>
-                                <p class="text-mute text-sm mb-6">${t('ugDocsSub')}</p>
-                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc1')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc2')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc3')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc4')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc5')}</span></li>
-                                </ul>
-                            </div>
-                            <div class="apple-card p-8 md:p-10 flex flex-col h-full">
-                                <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-clock"></i></div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugTimingTitle')}</h4>
-                                <p class="text-mute text-sm mb-6">${t('ugTimingSub')}</p>
-                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime1')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime2')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime3')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime4')}</span></li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -1969,27 +1961,36 @@ const majorCategories = {
                     </div>
                 </div>
 
-                <div class="section-light py-20 px-4 border-t border-gray-200">
-                    <div class="max-w-4xl mx-auto">
-                        <div class="text-center mb-10">
-                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('listTitle')(fm ? tr(fm.label) : null)}</h3>
-                            <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('listSub')(fm ? tr(fm.label) : null)}</p>
+                <div class="section-light py-24 px-4 border-t border-gray-200">
+                    <div class="max-w-5xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('ugPrepTitle')}</h3>
                         </div>
-                        <div id="ug-list-top" class="flex flex-wrap items-center justify-center gap-2.5 mb-3">
-                            <button class="filter-chip" data-f="all" onclick="renderUgCards('all')">${t('filterAll')}</button>
-                            <button class="filter-chip" data-f="iyo" onclick="renderUgCards('iyo')">${t('filterIyo')}</button>
-                            <button class="filter-chip" data-f="fnd" onclick="renderUgCards('fnd')">${t('filterFnd')}</button>
-                            <button class="filter-chip" data-f="direct" onclick="renderUgCards('direct')">${t('filterDirect')}</button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                            <div class="apple-card p-8 md:p-10 flex flex-col h-full">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-folder-open"></i></div>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugDocsTitle')}</h4>
+                                <p class="text-mute text-sm mb-6">${t('ugDocsSub')}</p>
+                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc1')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc2')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc3')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc4')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc5')}</span></li>
+                                </ul>
+                            </div>
+                            <div class="apple-card p-8 md:p-10 flex flex-col h-full">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-clock"></i></div>
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugTimingTitle')}</h4>
+                                <p class="text-mute text-sm mb-6">${t('ugTimingSub')}</p>
+                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime1')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime2')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime3')}</span></li>
+                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime4')}</span></li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="flex flex-wrap items-center justify-center gap-2.5 mb-4">
-                            <span class="text-[12px] text-mute font-semibold mr-1">${t('sortLabel')}</span>
-                            <button class="filter-chip" data-s="qs" onclick="setUgSort('qs')"><i class="fa-solid fa-trophy text-[11px] mr-1"></i>${t('sortQs')}</button>
-                            <button class="filter-chip" data-s="name" onclick="setUgSort('name')"><i class="fa-solid fa-arrow-down-a-z text-[11px] mr-1"></i>${t('sortAz')}</button>
-                            <button class="filter-chip" data-s="kname" onclick="setUgSort('kname')"><i class="fa-solid fa-font text-[11px] mr-1"></i>${t('sortKo')}</button>
-                        </div>
-                        <p class="text-center text-[13px] text-mute mb-10"><span id="ug-count"></span> · ${t('countNote')}</p>
-                        <div id="ug-cards" class="space-y-3"></div>
-                        <div id="ug-pager" class="flex flex-wrap items-center justify-center gap-2 mt-8"></div>
                     </div>
                 </div>
 
