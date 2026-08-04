@@ -84,6 +84,17 @@ const I18N = {
         boardSubUg: '학부 진학 준비에 꼭 필요한 공식 채널만 모았습니다. 입학요건과 비자 규정은 항상 공식 출처 기준이 우선입니다.',
         boardBtn: '영국 정부 공식 유학 안내 (Study UK)',
 
+        /* ---------- 유학 정보 글 (허브 guide/uk-info-*) ----------
+           제목·분류·분량은 여기 두지 않는다. 허브 색인에서 받아 온다. */
+        infoTitle: '이 결과와 관련된 유학 정보',
+        infoSubUg: '학부 진학에서 실제로 갈리는 지점만 다룬 글입니다. 수치는 모두 대학 공시에서 확인한 것입니다.',
+        infoSubPg: '석사 지원에서 실제로 갈리는 지점만 다룬 글입니다. 수치는 모두 대학 공시에서 확인한 것입니다.',
+        infoRead: '약 {0}분 · 정보 확인 {1}',
+        cat_major: '전공 선택',
+        cat_pathway: '진학 경로',
+        cat_cost: '학비·비용',
+        cat_english: '영어·요건',
+
         /* ---------- 대학 상세 모달 ---------- */
         qsBadge: (qs) => `QS 2027 세계 ${qs}위`,
         modalSubName: (k) => k,
@@ -384,6 +395,16 @@ const I18N = {
         boardSubPg: "The official channels you will need for a master's application. Entry requirements and visa rules always follow the official source.",
         boardSubUg: "The official channels you will need for an undergraduate application. Entry requirements and visa rules always follow the official source.",
         boardBtn: "Study UK — the official guide to studying in the UK",
+
+        /* ---------- 유학 정보 글 (허브 guide/uk-info-*) ---------- */
+        infoTitle: "Guides related to this result",
+        infoSubUg: "Each one covers a point that actually decides an undergraduate application. Every figure comes from a university's own published information.",
+        infoSubPg: "Each one covers a point that actually decides a master's application. Every figure comes from a university's own published information.",
+        infoRead: "About {0} min · verified {1}",
+        cat_major: "Choosing a field",
+        cat_pathway: "Entry routes",
+        cat_cost: "Fees and costs",
+        cat_english: "English and entry",
 
         /* ---------- 대학 상세 모달 ---------- */
         qsBadge: (qs) => `QS 2027 world #${qs}`,

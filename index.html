@@ -1026,6 +1026,74 @@ const majorCategories = {
             return id ? `https://jaebong-choi.github.io/study-guide-hub/uni/${id}.html` : null;
         }
 
+        /* ── 유학 정보 글 ────────────────────────────────────────────
+           허브(guide/uk-info-*.html)에 있는 글을 결과 아래에 목록으로 붙인다.
+           ⚠ 제목·분류·분량은 여기 두지 않는다. 허브가 빌드할 때 뽑는 색인에서 받아 온다.
+             호주 진단은 제목을 복사해 뒀다가 26편이 전부 어긋난 적이 있다(2026-08-04).
+             여기 남기는 것은 진단만 아는 두 가지뿐이다 — 어느 전공에 붙일지와 tracks.
+           글을 추가하려면 허브 data/articles-uk.json에 쓰고 여기엔 slug만 걸면 된다.
+           지금 6편은 전부 전공 무관(파운데이션·학비)이라 INFO_COMMON에만 있다.
+           전공별 글이 생기면 INFO_ARTICLES에 majorData 키로 넣는다. */
+        const HUB_BASE = 'https://jaebong-choi.github.io/study-guide-hub/';
+        const HUB_ARTICLE = HUB_BASE + 'guide/uk-info-';
+        const HUB_ARTICLE_INDEX = HUB_BASE + 'data/articles-uk-index.json';
+
+        const INFO_ARTICLES = {};
+        const INFO_COMMON = [
+            { slug: 'ug-fees-2026',       tracks: ['ug'] },
+            { slug: 'foundation-accepted', tracks: ['ug'] },
+            { slug: 'foundation-fees',     tracks: ['ug'] },
+            { slug: 'foundation-intakes',  tracks: ['ug'] },
+            { slug: 'iyo-second-year',     tracks: ['ug'] },
+            { slug: 'msc-fees-2026',       tracks: ['pg'] }
+        ];
+
+        /* 색인은 허브와 같은 오리진이라 CORS 문제가 없다.
+           못 받으면 조용히 비워 둔다: 글 섹션만 안 나오고 결과의 나머지는 그대로다. */
+        let ARTICLE_INDEX = null;
+        fetch(HUB_ARTICLE_INDEX)
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d) { ARTICLE_INDEX = d; renderInfoArticles(); } })
+            .catch(() => {});
+
+        // 결과에 들어갈 섹션 껍데기. 내용은 renderInfoArticles()가 채운다.
+        function articlesHTML(kind) {
+            return `
+                <div class="section-light py-24 px-4 border-t border-gray-200" id="info-articles-section" style="display:none">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('infoTitle')}</h3>
+                            <p class="text-lg text-mute max-w-2xl mx-auto leading-relaxed">${kind === 'pg' ? t('infoSubPg') : t('infoSubUg')}</p>
+                        </div>
+                        <div class="space-y-3" id="info-articles"></div>
+                    </div>
+                </div>`;
+        }
+
+        /* 결과를 그린 뒤와 색인이 도착한 뒤 양쪽에서 부른다(환율과 같은 방식).
+           색인에 없는 slug는 건너뛴다 — 빈 행 대신 아예 안 그린다. */
+        function renderInfoArticles() {
+            const sec = document.getElementById('info-articles-section');
+            const wrap = document.getElementById('info-articles');
+            if (!sec || !wrap) return;   // 아직 결과 화면이 아니다
+            const rows = ((currentState.major && INFO_ARTICLES[currentState.major]) || []).concat(INFO_COMMON)
+                .filter(a => !a.tracks || a.tracks.indexOf(track) > -1)
+                .map(a => ARTICLE_INDEX && ARTICLE_INDEX[a.slug]
+                    ? Object.assign({ url: HUB_ARTICLE + a.slug + '.html' }, ARTICLE_INDEX[a.slug])
+                    : null)
+                .filter(Boolean);
+            sec.style.display = rows.length ? 'block' : 'none';
+            wrap.innerHTML = rows.map(a => `
+                <a href="${a.url}" target="_blank" rel="noopener"
+                   class="flex items-center justify-between gap-4 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl px-6 py-4 transition group">
+                    <span class="text-left">
+                        <span class="block text-[15px] text-gray-800 group-hover:text-black font-medium">${LANG === 'en' ? a.en : a.ko}</span>
+                        <span class="block text-xs text-mute mt-1">${t('cat_' + (a.cat || 'major'))} · ${t('infoRead').replace('{0}', a.min).replace('{1}', a.ver)}</span>
+                    </span>
+                    <i class="fa-solid fa-arrow-right text-royal text-sm shrink-0 group-hover:translate-x-1 transition-transform"></i>
+                </a>`).join('');
+        }
+
         function showUniDetail(name) {
             const info = uniInfo(name);
             if (!info) return;
@@ -1731,11 +1799,13 @@ const majorCategories = {
                     </div>
                 </div>
 
+                ${articlesHTML('pg')}
                 ${boardHTML('pg')}
                 ${ctaHTML(t('ctaTitle'), t('ctaSubPg'))}
                 ${footerHTML()}
             `;
             resultSection.innerHTML = html;
+            renderInfoArticles();   // 색인이 이미 도착해 있으면 바로 채운다
             history.replaceState(null, '', '#p=' + encodeURIComponent(JSON.stringify({ t: track, s: currentState })));
             window.scrollTo({ top: 0 });
         }
@@ -2170,11 +2240,13 @@ const majorCategories = {
                     </div>
                 </div>
 
+                ${articlesHTML('ug')}
                 ${boardHTML('ug')}
                 ${ctaHTML(t('ctaTitle'), t('ctaSubUg'))}
                 ${footerHTML()}
             `;
             resultSection.innerHTML = html;
+            renderInfoArticles();   // 색인이 이미 도착해 있으면 바로 채운다
             // 진단 추천 경로를 기본 필터로. 표시 대학 수를 줄여 심플하게
             renderUgCards(rec === 'iyo' ? 'iyo' : rec === 'fnd' ? 'fnd' : 'all');
             history.replaceState(null, '', '#p=' + encodeURIComponent(JSON.stringify({ t: track, s: currentState })));
