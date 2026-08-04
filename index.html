@@ -68,7 +68,7 @@
     </script>
 
     <!-- 한국어/English 사전 · 번역 함수 (t · tr · applyLang · setLang) -->
-    <script src="i18n.js?v=20260821"></script>
+    <script src="i18n.js?v=20260822"></script>
 
     <!-- Tally 팝업 위젯 (무료 상담 신청 폼) -->
     <script async src="https://tally.so/widgets/embed.js"></script>
@@ -125,6 +125,32 @@
         .apple-card:hover { transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.08); }
         .info-badge { display:inline-flex; align-items:center; background:#f5f5f7; border-radius:8px; padding:6px 10px; font-size:12px; font-weight:600; color:#3a3a3c; }
         .route-badge { display:inline-flex; align-items:center; gap:6px; border-radius:8px; padding:6px 10px; font-size:12px; font-weight:700; }
+        /* 경로 카드: 체브론 3단(pflow) + 스펙 3줄(pspec).
+         * 긴 불릿 목록 대신 시작→과정→도착이 한 줄로 읽히게 한다(호주 결과 페이지와 같은 구조).
+         * section-light 안에서만 쓰므로 밝은 톤 하나로 충분하다. */
+        .pflow { display:flex; gap:3px; list-style:none; margin:0 0 16px; padding:0; }
+        .pflow-step {
+            flex:1 1 0; min-width:0; padding:9px 10px 9px 18px;
+            background:#f5f5f7; font-size:12px; font-weight:600;
+            color:#1d1d1f; line-height:1.35; word-break:keep-all;
+            clip-path:polygon(0 0, calc(100% - 11px) 0, 100% 50%, calc(100% - 11px) 100%, 0 100%, 11px 50%);
+        }
+        .pflow-step span { display:block; font-size:10.5px; font-weight:500; color:#86868b; margin-top:2px; }
+        .pflow-step:first-child {
+            padding-left:10px; background:#004AAD; color:#fff;
+            clip-path:polygon(0 0, calc(100% - 11px) 0, 100% 50%, calc(100% - 11px) 100%, 0 100%);
+        }
+        .pflow-step:first-child span { color:#fff; opacity:.78; }
+        .pflow-step:last-child {
+            background:#1d1d1f; color:#fff;
+            clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%, 11px 50%);
+        }
+        .pflow-step:last-child span { color:#fff; opacity:.72; }
+        /* 라벨 칸은 max-content로 둔다. 고정 폭을 주면 영어 라벨("Progression")이
+           칸을 넘거나 두 줄로 꺾인다 — 호주에서 겪은 것과 같은 문제다. */
+        .pspec { display:grid; grid-template-columns:max-content 1fr; gap:7px 12px; align-items:baseline; margin-bottom:14px; font-size:13px; }
+        .pspec dt { color:#86868b; font-weight:500; white-space:nowrap; }
+        .pspec dd { color:#1d1d1f; font-weight:600; word-break:keep-all; margin:0; }
         .consult-banner { background:#FFDE59; color:#111; border-radius:14px; transition:all .25s ease; }
         .consult-banner:hover { background:#F2CB2E; transform:translateY(-1px); }
         .uni-link-banner { background:#fff; color:#1d1d1f; border:1px solid #d2d2d7; border-radius:14px; transition:all .25s ease; }
@@ -1733,33 +1759,17 @@ const majorCategories = {
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-graduation-cap"></i></div>
                                 <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('pmTitle')}</h4>
                                 <p class="text-royal font-semibold mb-4 text-sm">${t('pmCardSub')}</p>
-                                <p class="text-[15px] text-gray-600 leading-relaxed mb-6">${t('pmCardDesc')}</p>
-                                <p class="text-[13px] font-semibold text-ink2 mb-2">${t('whenRec')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed mb-6">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pmWhen1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pmWhen2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pmWhen3')}</li>
-                                </ul>
-                                <div class="mt-auto pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p>${t('pmMeta1')}</p>
-                                    <p class="mt-2">${t('pmMeta2')}</p>
-                                </div>
+                                ${flowHTML(t('pmFlow'))}
+                                ${specHTML(t('pmSpec'))}
+                                <p class="text-[13px] text-mute leading-relaxed mt-auto pt-4 border-t border-gray-100"><i class="fa-solid fa-circle-exclamation text-yellow-500 mr-1.5"></i>${t('pmNote')}</p>
                             </div>
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-language"></i></div>
                                 <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('psTitle')}</h4>
                                 <p class="text-royal font-semibold mb-4 text-sm">${t('psSub')}</p>
-                                <p class="text-[15px] text-gray-600 leading-relaxed mb-6">${t('psDesc')}</p>
-                                <p class="text-[13px] font-semibold text-ink2 mb-2">${t('whenRec')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed mb-6">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('psWhen1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('psWhen2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('psWhen3')}</li>
-                                </ul>
-                                <div class="mt-auto pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p>${t('psMeta1')}</p>
-                                    <p class="mt-2">${t('psMeta2')}</p>
-                                </div>
+                                ${flowHTML(t('psFlow'))}
+                                ${specHTML(t('psSpec'))}
+                                <p class="text-[13px] text-mute leading-relaxed mt-auto pt-4 border-t border-gray-100"><i class="fa-solid fa-circle-exclamation text-yellow-500 mr-1.5"></i>${t('psNote')}</p>
                             </div>
                         </div>
                         <p class="text-center text-[13px] text-mute mt-8 max-w-3xl mx-auto leading-relaxed">${t('prepSummary')}</p>
@@ -1776,16 +1786,11 @@ const majorCategories = {
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-folder-open"></i></div>
                                 <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('commonDocsTitle')}</h4>
-                                <p class="text-mute text-sm mb-6">${t('commonDocsSub')}</p>
-                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc1')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc2')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc3')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc4')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc5')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc6')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('cDoc7')}</span></li>
-                                </ul>
+                                <p class="text-mute text-sm mb-5">${t('commonDocsSub')}</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${t('cDocChips').map(c => `<span class="info-badge text-[13px] py-2">${c}</span>`).join('')}
+                                </div>
+                                <p class="text-[13px] text-mute leading-relaxed mt-auto pt-5">${t('cDocsNote')}</p>
                             </div>
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-user-check"></i></div>
@@ -1798,9 +1803,10 @@ const majorCategories = {
                         </div>
                         <div class="mt-8 apple-card p-8 md:p-10 flex flex-col sm:flex-row gap-6 items-start">
                             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal text-xl shrink-0"><i class="fa-solid fa-clock"></i></div>
-                            <div>
-                                <h4 class="text-xl font-bold text-black tracking-tight mb-2">${t('timingTitle')}</h4>
-                                <p class="text-[15px] text-gray-700 leading-relaxed">${t('timingDesc')}</p>
+                            <div class="w-full">
+                                <h4 class="text-xl font-bold text-black tracking-tight mb-4">${t('timingTitle')}</h4>
+                                ${specHTML(t('timingSpec'))}
+                                <p class="text-[13px] text-mute leading-relaxed">${t('timingNote')}</p>
                             </div>
                         </div>
                     </div>
@@ -1971,6 +1977,10 @@ const majorCategories = {
             }
         }
 
+        // 경로 카드 조각. i18n의 flow/spec 배열([제목, 보조]) 그대로 받는다
+        const flowHTML = rows => `<ol class="pflow">${rows.map(f => `<li class="pflow-step">${f[0]}<span>${f[1]}</span></li>`).join('')}</ol>`;
+        const specHTML = rows => `<dl class="pspec">${rows.map(s => `<dt>${s[0]}</dt><dd>${s[1]}</dd>`).join('')}</dl>`;
+
         function showUgResult() {
             document.getElementById('chat-section').style.display = 'none';
             const resultSection = document.getElementById('result-section');
@@ -2060,43 +2070,20 @@ const majorCategories = {
                             <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('routes3Sub')}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="apple-card p-8 flex flex-col ${ring('fnd')}">
-                                ${recChip('fnd')}
-                                <h4 class="text-xl font-bold text-black mb-1">${t('fndCardTitle')}</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">${t('fndCardSub')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi3')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('fndLi4')}</li>
-                                </ul>
-                            </div>
-                            <div class="apple-card p-8 flex flex-col ${ring('iyo')}">
-                                ${recChip('iyo')}
-                                <h4 class="text-xl font-bold text-black mb-1">${t('iyoCardTitle')}</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">${t('iyoCardSub')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi3')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>${t('iyoLi4')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('iyoLi5')}</li>
-                                </ul>
-                            </div>
-                            <div class="apple-card p-8 flex flex-col ${ring('direct')}">
-                                ${recChip('direct')}
-                                <h4 class="text-xl font-bold text-black mb-1">${t('dirCardTitle')}</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">${t('dirCardSub')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi3')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('dirLi4')}</li>
-                                </ul>
-                                <div class="mt-5 pt-4 border-t border-gray-100 bg-amber-50 -mx-8 -mb-8 px-8 py-4 rounded-b-2xl">
-                                    <p class="text-[13px] text-gray-700 leading-relaxed">${t('dirNote')}</p>
-                                </div>
-                            </div>
+                            ${[['fnd', 'fndCardTitle', 'fndCardSub', 'routeFnd'],
+                               ['iyo', 'iyoCardTitle', 'iyoCardSub', 'routeIyo'],
+                               ['direct', 'dirCardTitle', 'dirCardSub', 'routeDir']].map(([k, tk, sk, rk]) => {
+                                const r = t(rk);
+                                return `
+                            <div class="apple-card p-8 flex flex-col ${ring(k)}">
+                                ${recChip(k)}
+                                <h4 class="text-xl font-bold text-black mb-1">${t(tk)}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t(sk)}</p>
+                                ${flowHTML(r.flow)}
+                                ${specHTML(r.spec)}
+                                <p class="text-[13px] text-mute leading-relaxed mt-auto"><i class="fa-solid fa-circle-exclamation text-yellow-500 mr-1.5"></i>${r.note}</p>
+                            </div>`;
+                            }).join('')}
                         </div>
                         <p class="text-center text-[13px] text-mute mt-8">${t('ugTuitionNote')}</p>
                     </div>
@@ -2108,60 +2095,20 @@ const majorCategories = {
                             <h3 class="text-3xl md:text-4xl font-bold tracking-tighter2 mb-4 text-black">${t('ftTitle')}</h3>
                             <p class="text-lg text-mute max-w-3xl mx-auto leading-relaxed">${t('ftSub')}</p>
                         </div>
-                        <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3 mt-10 mb-8 text-[13px] md:text-[14px] font-semibold">
-                            <span class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-gray-500"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] flex items-center justify-center">1</span> ${t('ftStep1')}</span>
-                            <i class="fa-solid fa-arrow-right text-gray-300 text-xs"></i>
-                            <span class="inline-flex items-center gap-2 bg-gold rounded-full px-4 py-2 text-black"><span class="w-5 h-5 rounded-full bg-black text-white text-[11px] flex items-center justify-center">2</span> ${t('ftStep2')}</span>
-                            <i class="fa-solid fa-arrow-right text-gray-300 text-xs"></i>
-                            <span class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-gray-500"><span class="w-5 h-5 rounded-full bg-ink2 text-white text-[11px] flex items-center justify-center">3</span> ${t('ftStep3')}</span>
-                        </div>
-                        <div class="max-w-3xl mx-auto bg-[#fffbeb] border border-yellow-200 rounded-2xl p-6 mb-10">
+                        <div class="max-w-3xl mx-auto bg-[#fffbeb] border border-yellow-200 rounded-2xl p-6 mt-10 mb-10">
                             <p class="text-[14px] text-gray-800 leading-relaxed"><i class="fa-solid fa-wand-magic-sparkles text-gold-deep mr-2"></i><strong>${t('ftRecLabel')}</strong> ${ft.reason}</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="apple-card p-8 flex flex-col ${ftRing('private')}">
-                                ${ftChip('private', 'chipOpen')}
-                                <h4 class="text-xl font-bold text-black mb-1">${t('pvTitle')}</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">${t('pvSub')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed flex-grow">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi3')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi4')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('pvLi5')}</li>
-                                </ul>
-                                <div class="mt-5 pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p class="mt-2">${t('pvRec')}</p>
-                                </div>
-                            </div>
-                            <div class="apple-card p-8 flex flex-col ${ftRing('own')}">
-                                ${ftChip('own', 'chipOwn')}
-                                <h4 class="text-xl font-bold text-black mb-1">${t('ownTitle')}</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">${t('ownSub')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed flex-grow">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('ownLi1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('ownLi2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('ownLi3')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>${t('ownLi4')}</li>
-                                </ul>
-                                <div class="mt-5 pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p class="mt-2">${t('ownRec')}</p>
-                                </div>
-                            </div>
-                            <div class="apple-card p-8 flex flex-col ${ftRing('guaranteed')}">
-                                ${ftChip('guaranteed', 'chipGuar')}
-                                <h4 class="text-xl font-bold text-black mb-1">${t('guTitle')}</h4>
-                                <p class="text-royal text-sm font-semibold mb-4">${t('guSub')}</p>
-                                <ul class="space-y-2.5 text-[14px] text-gray-700 leading-relaxed flex-grow">
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('guLi1')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('guLi2')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-circle-check text-royal mt-1 text-xs shrink-0"></i>${t('guLi3')}</li>
-                                    <li class="flex gap-2.5"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs shrink-0"></i>${t('guLi4')}</li>
-                                </ul>
-                                <div class="mt-5 pt-5 border-t border-gray-100 text-[13px] text-mute leading-relaxed">
-                                    <p class="mt-2">${t('guRec')}</p>
-                                </div>
-                            </div>
+                            ${[['private', 'chipOpen', 'pvTitle', 'pvSub', 'pvSpec', 'pvRec'],
+                               ['own', 'chipOwn', 'ownTitle', 'ownSub', 'ownSpec', 'ownRec'],
+                               ['guaranteed', 'chipGuar', 'guTitle', 'guSub', 'guSpec', 'guRec']].map(([ty, ck, tk, sk, spk, rk]) => `
+                            <div class="apple-card p-8 flex flex-col ${ftRing(ty)}">
+                                ${ftChip(ty, ck)}
+                                <h4 class="text-xl font-bold text-black mb-1">${t(tk)}</h4>
+                                <p class="text-royal text-sm font-semibold mb-4">${t(sk)}</p>
+                                ${specHTML(t(spk))}
+                                <p class="text-[13px] text-mute leading-relaxed mt-auto pt-4 border-t border-gray-100">${t(rk)}</p>
+                            </div>`).join('')}
                         </div>
 
                         <div class="max-w-4xl mx-auto mt-14">
@@ -2179,8 +2126,6 @@ const majorCategories = {
                             </div>
                             <p class="text-[13px] text-mute mt-4 leading-relaxed">${t('pfNote')}</p>
                         </div>
-
-                        <p class="text-center text-[14px] text-gray-700 mt-10 max-w-3xl mx-auto leading-relaxed">${t('nextStepLine')(fm ? tr(fm.label) : null)}</p>
                     </div>
                 </div>
 
@@ -2223,25 +2168,17 @@ const majorCategories = {
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-folder-open"></i></div>
                                 <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugDocsTitle')}</h4>
-                                <p class="text-mute text-sm mb-6">${t('ugDocsSub')}</p>
-                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc1')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc2')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc3')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc4')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-circle-check text-royal mt-1 text-sm shrink-0"></i><span>${t('ugDoc5')}</span></li>
-                                </ul>
+                                <p class="text-mute text-sm mb-5">${t('ugDocsSub')}</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${t('ugDocChips').map(c => `<span class="info-badge text-[13px] py-2">${c}</span>`).join('')}
+                                </div>
+                                <p class="text-[13px] text-mute leading-relaxed mt-auto pt-5">${t('ugDocsNote')}</p>
                             </div>
                             <div class="apple-card p-8 md:p-10 flex flex-col h-full">
                                 <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-royal mb-5 text-xl"><i class="fa-solid fa-clock"></i></div>
                                 <h4 class="text-xl font-bold text-black tracking-tight mb-1">${t('ugTimingTitle')}</h4>
-                                <p class="text-mute text-sm mb-6">${t('ugTimingSub')}</p>
-                                <ul class="space-y-3.5 text-[15px] text-gray-700 leading-relaxed">
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime1')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime2')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime3')}</span></li>
-                                    <li class="flex gap-3"><i class="fa-solid fa-star text-yellow-500 mt-1 text-sm shrink-0"></i><span>${t('ugTime4')}</span></li>
-                                </ul>
+                                <p class="text-mute text-sm mb-5">${t('ugTimingSub')}</p>
+                                ${specHTML(t('ugTimeSpec'))}
                             </div>
                         </div>
                     </div>
