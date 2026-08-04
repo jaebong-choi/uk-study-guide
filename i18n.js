@@ -279,9 +279,22 @@ const I18N = {
         listTitle: (label) => `${label ? label + ' 계열 ' : ''}추천 영국 대학`,
         listSub: (label) => `각 대학 아래에 ${label ? '<strong class="text-ink2">' + label + ' 계열에서 진학 가능한 전공명</strong>' : '진학 가능한 전공명'}을 함께 표시했습니다.<br class="hidden sm:block">대학 이름이나 '학교 안내'를 누르면 학교 소개 · 우세 전공 · 진입 경로를 확인할 수 있습니다.`,
         filterAll: '전체',
+        filterOwn: '대학 자체 파운데이션',
+        filterPrivate: '사설 기관 온캠퍼스',
         filterIyo: 'IYO 운영',
         filterFnd: '파운데이션 운영',
         filterDirect: 'A-level · IB 전형',
+        grpDirect: 'A-level · IB (식스폼)',
+        grpOwn: '대학 자체 운영',
+        grpKaplan: 'Kaplan 온캠퍼스',
+        grpSg: 'Study Group 온캠퍼스',
+        grpInto: 'INTO 온캠퍼스',
+        grpCeg: 'CEG ONCAMPUS',
+        grpNavitas: 'Navitas 온캠퍼스',
+        grpEtc: '사설 기관 온캠퍼스',
+        pfTitle: '대학 밖에서 고르는 경로',
+        pfSub: '위 목록의 파운데이션은 그 대학 캠퍼스 안에서만 운영됩니다. 아래는 한 대학에 묶이지 않는 경로라, 성적이 나온 뒤에 학교를 정하고 싶을 때 씁니다.',
+        pfNote: '진학 보장은 기관이 정한 성적 · 출석 기준을 채웠을 때만 적용됩니다. 보장 대상 학교와 기준은 해마다 바뀌니 지원 전에 기관 공식 페이지에서 확인하세요.',
         sortLabel: '정렬',
         sortQs: 'QS 랭킹순',
         sortAz: '이름순 A-Z',
@@ -290,7 +303,7 @@ const I18N = {
         countNote: '과정 개설 전공과 요건은 학기마다 변동될 수 있습니다',
         prevPage: '이전 페이지',
         nextPage: '다음 페이지',
-        uniSub: (k, qs) => `${k} · QS ${qs}위`,
+        uniSub: (k, qs) => qs ? `${k} · QS ${qs}위` : `${k} · QS 순위 미표기`,
         schoolInfo: '학교 안내',
         officialView: '공식 홈페이지 보기'
     },
@@ -566,9 +579,22 @@ const I18N = {
         listTitle: (label) => `${label ? 'Recommended UK universities — ' + label : 'Recommended UK universities'}`,
         listSub: (label) => `Under each university we list ${label ? '<strong class="text-ink2">the courses you can enter in ' + label + '</strong>' : 'the courses you can enter'}.<br class="hidden sm:block">Select a university name or 'About' for its profile, strongest subjects and entry routes.`,
         filterAll: "All",
+        filterOwn: "University-run foundation",
+        filterPrivate: "Provider centre on campus",
         filterIyo: "Runs IYO",
         filterFnd: "Runs a foundation",
         filterDirect: "A-level / IB entry",
+        grpDirect: "A-level / IB (sixth form)",
+        grpOwn: "Run by the university",
+        grpKaplan: "Kaplan, on campus",
+        grpSg: "Study Group, on campus",
+        grpInto: "INTO, on campus",
+        grpCeg: "CEG ONCAMPUS",
+        grpNavitas: "Navitas, on campus",
+        grpEtc: "Independent provider, on campus",
+        pfTitle: "Routes not tied to one university",
+        pfSub: "Every foundation listed above runs on its own university's campus. The routes below are not tied to a single university, which suits students who would rather choose once their results are in.",
+        pfNote: "Guaranteed progression applies only if you meet the provider's grade and attendance conditions. The guaranteed universities and the conditions change from year to year, so check the provider's own pages before you apply.",
         sortLabel: "Sort",
         sortQs: "QS ranking",
         sortAz: "Name A–Z",
@@ -577,7 +603,7 @@ const I18N = {
         countNote: "Courses and requirements can change each term",
         prevPage: "Previous page",
         nextPage: "Next page",
-        uniSub: (k, qs) => `QS #${qs}`,
+        uniSub: (k, qs) => qs ? `QS #${qs}` : 'QS rank not listed',
         schoolInfo: "About",
         officialView: "Official site"
     }
@@ -871,6 +897,27 @@ const DATA_EN = {
     "요크대학교": "University of York",
     "러프버러대학교": "Loughborough University",
     "퀸메리 런던대학교": "Queen Mary University of London",
+    "리버풀대학교": "University of Liverpool",
+    "카디프대학교": "Cardiff University",
+    "리딩대학교": "University of Reading",
+    "서리대학교": "University of Surrey",
+    "레스터대학교": "University of Leicester",
+    "브루넬 런던대학교": "Brunel University of London",
+    "버크벡 런던대학교": "Birkbeck, University of London",
+    "시티 세인트조지스": "City St George's",
+    "옥스퍼드브룩스대학교": "Oxford Brookes University",
+    "아스턴대학교": "Aston University",
+    "소아스 런던대학교": "SOAS University of London",
+    "로열홀로웨이": "Royal Holloway",
+    "노섬브리아대학교": "Northumbria University",
+    "골드스미스 런던대학교": "Goldsmiths, University of London",
+    "로열수의과대학": "Royal Veterinary College",
+    "웨스트민스터대학교": "University of Westminster",
+    "미들섹스대학교": "Middlesex University",
+    "센트럴랭커셔대학교": "University of Central Lancashire",
+    "드몽포트대학교": "De Montfort University",
+    "앵글리아러스킨대학교": "Anglia Ruskin University",
+    "리버풀존무어스대학교": "Liverpool John Moores University",
 
     /* --- 도시명 --- */
     "런던": "London", "옥스퍼드": "Oxford", "케임브리지": "Cambridge", "에든버러": "Edinburgh",
@@ -878,24 +925,39 @@ const DATA_EN = {
     "리즈": "Leeds", "글래스고": "Glasgow", "셰필드": "Sheffield", "더럼": "Durham",
     "노팅엄": "Nottingham", "사우샘프턴": "Southampton", "세인트앤드루스": "St Andrews",
     "바스": "Bath", "엑서터": "Exeter", "뉴캐슬": "Newcastle", "랭커스터": "Lancaster",
+    "리버풀": "Liverpool", "카디프": "Cardiff", "리딩": "Reading", "길퍼드": "Guildford",
+    "브라이턴": "Brighton", "레스터": "Leicester", "이검": "Egham", "요크": "York",
+    "러프버러": "Loughborough", "프레스턴": "Preston",
 
-    /* --- 파운데이션 경로 라벨 --- */
-    "UCL UPC (자체 운영)": "UCL UPC (university-run)",
-    "자체 국제 파운데이션": "University-run international foundation",
-    "King's Foundations (자체)": "King's Foundations (university-run)",
-    "INTO Manchester 제휴": "INTO Manchester (partner)",
-    "Kaplan 제휴 파운데이션": "Kaplan partner foundation",
-    "Warwick IFP (자체)": "Warwick IFP (university-run)",
-    "BIA (Kaplan 제휴)": "BIA (Kaplan partner)",
-    "Leeds ISC (Study Group 제휴)": "Leeds ISC (Study Group partner)",
-    "GIC (Kaplan 제휴)": "GIC (Kaplan partner)",
-    "USIC (Study Group 제휴)": "USIC (Study Group partner)",
-    "Durham ISC (Study Group 제휴)": "Durham ISC (Study Group partner)",
-    "UNIC (Kaplan 제휴)": "UNIC (Kaplan partner)",
-    "자체 International Foundation": "University-run International Foundation",
-    "INTO Exeter (캠퍼스 내)": "INTO Exeter (on campus)",
-    "INTO Newcastle (캠퍼스 내)": "INTO Newcastle (on campus)",
-    "Lancaster ISC (INTO 제휴)": "Lancaster ISC (INTO partner)",
+    /* --- 대학 밖 경로(오픈 초이스) --- */
+    "식스폼 칼리지 (A-level 2년)": "Sixth-form college (two-year A-levels)",
+    "오픈 초이스 · 런던 센터는 브리스톨 진학 보장": "Open choice · the London centre guarantees Bristol progression",
+    "오픈 초이스 · A-level 과정 병행": "Open choice · also runs A-levels",
+    "대학 캠퍼스 안 · 센터 간 이동 가능": "On a university campus · transfers between centres possible",
+    "대학 제휴 + INTO London(오픈 초이스)": "University partnerships plus INTO London (open choice)",
+    "파운데이션과 A-level을 함께 운영": "Runs foundations and A-levels side by side",
+    "파운데이션이 아닌 정규 고교 과정": "A school qualification, not a foundation",
+    "버밍엄 · 글래스고 · 노팅엄 · 요크 · 리버풀 · 브리스톨(보장)": "Birmingham · Glasgow · Nottingham · York · Liverpool · Bristol (guaranteed)",
+    "브리스톨(보장) · 리즈 · 뉴캐슬 · 아스턴 외 다수": "Bristol (guaranteed) · Leeds · Newcastle · Aston and others",
+    "아스턴 · 러프버러 · 리딩 · 사우샘프턴 · 런던 소재 다수": "Aston · Loughborough · Reading · Southampton and several London universities",
+    "맨체스터 · 뉴캐슬 · 엑서터 · 랭커스터 · 시티 세인트조지스": "Manchester · Newcastle · Exeter · Lancaster · City St George's",
+    "성적에 맞춰 중상위권 대학에 오픈 초이스로 지원": "Open-choice applications to mid- and upper-tier universities on your results",
+    "옥스퍼드 · 케임브리지 · 임페리얼 · LSE · 로열수의과대학처럼 파운데이션을 두지 않는 학교":
+        "For universities with no foundation of their own — Oxford, Cambridge, Imperial, LSE, the Royal Veterinary College",
+
+    /* --- 학부 우세 전공 --- */
+    "저널리즘·미디어": "Journalism and media", "부동산학": "Real estate", "식품과학": "Food science",
+    "농업학": "Agriculture", "호텔·관광경영": "Hospitality and tourism management",
+    "전기전자공학": "Electrical and electronic engineering", "산업디자인": "Industrial design",
+    "경영·금융": "Business and finance", "간호·보건": "Nursing and health",
+    "호스피탈리티매니지먼트": "Hospitality management", "자동차공학": "Automotive engineering",
+    "회계·금융": "Accounting and finance", "개발학": "Development studies",
+    "국제관계·정치학": "International relations and politics", "정보보안": "Information security",
+    "공연예술": "Performing arts", "수의간호학": "Veterinary nursing", "생물의학": "Biomedical sciences",
+    "미디어·커뮤니케이션": "Media and communications", "예술디자인": "Art and design",
+    "미디어·저널리즘": "Media and journalism", "항공운항학": "Aviation", "패션디자인": "Fashion design",
+    "게임개발": "Games development", "고고학": "Archaeology", "범죄학": "Criminology",
+    "우주과학·천문학": "Space science and astronomy", "파인아트": "Fine art",
 
     /* --- 학부 대학 노트 --- */
     "국제학생 파운데이션 미운영. A-level·IB 등 인정 고교 과정 성적으로 지원하는 최상위 이공계 명문입니다.":
@@ -912,36 +974,48 @@ const DATA_EN = {
         "A central London university whose own international foundation leads into humanities, social science and STEM degrees.",
     "INTO Manchester 파운데이션 수료 후 진입. NCUK 연계로 다른 북부 명문 지원도 가능합니다.":
         "Entry follows the INTO Manchester foundation; the NCUK link also opens applications to other leading northern universities.",
-    "이공계·사회과학이 고루 강한 명문으로 파운데이션 경유 진학 수요가 많습니다.":
-        "Strong across both STEM and social science, with heavy demand for entry via the foundation route.",
+    "이공계·사회과학이 고루 강한 명문으로 파운데이션 경유 진학 수요가 많습니다. Kaplan·Kings 런던 파운데이션에는 브리스톨 진학 보장 루트가 따로 있습니다.":
+        "Strong across both STEM and social science, with heavy demand for entry via the foundation route. The Kaplan and Kings foundations in London also carry a separate guaranteed route to Bristol.",
+    "런던대학교(UoL) 소속 러셀그룹으로 파운데이션을 대학이 직접 운영합니다. 인문사회·경영·이공계 세 트랙이 있습니다.":
+        "A Russell Group member of the University of London that runs its own foundation, in three tracks: humanities and social science, business, and STEM.",
+    "Kaplan이 운영하는 IPC에서 파운데이션과 IYO를 함께 두며, 9월 외에 1월 입학도 받습니다.":
+        "The Kaplan-run IPC offers both the foundation and the IYO, with a January intake alongside September.",
+    "스포츠 분야 세계 1위권 특성화 명문. 파운데이션은 캠퍼스 안 CEG ONCAMPUS 센터가 맡고 수료 시 진학이 보장됩니다.":
+        "A specialist university ranked around first in the world for sport. Its foundation is run by the CEG ONCAMPUS centre on campus, with progression guaranteed on completion.",
+    "국제개발학이 세계 최상위 평가를 받은 연구 명문. 파운데이션은 캠퍼스 안 ISC에서 운영합니다.":
+        "A research university rated among the world's best for development studies. The foundation runs at the ISC on campus.",
+    "Navitas가 운영하는 캠퍼스 내 센터에서 파운데이션과 경영 IYO를 함께 둡니다. 파운데이션 영어 요건이 IELTS 4.5로 낮은 편입니다.":
+        "The Navitas-run centre on campus offers both the foundation and a business IYO. Foundation entry starts at IELTS 4.5, low by UK standards.",
+    "예술·미디어 특성화 대학. 파운데이션 수료 기준을 채우면 학부 진학이 보장되며, 디자인 계열은 영어 요건이 높고 예술 계열은 포트폴리오를 봅니다.":
+        "A specialist in art and media. Meeting the foundation's completion grades guarantees a degree place; design courses ask for higher English scores and art courses ask for a portfolio.",
     "자체 파운데이션이 없어 A-level·IB 전형이 기본. UCL UPC 등 타 기관 파운데이션 수료 후 지원하는 사례가 많습니다.":
         "No foundation of its own, so A-level / IB entry is the default. Many applicants come through other providers' foundations such as UCL UPC.",
     "1983년부터 운영된 영국 최장수급 자체 파운데이션(IFP). 경영·수학 계열 진입 경로로 특히 유명합니다.":
         "One of the UK's longest-running university foundations (IFP, since 1983), best known as a route into business and mathematics.",
-    "캠퍼스 내 파운데이션(BIA)을 대학 교수진이 직접 강의하고 Kaplan이 입학을 관리합니다.":
-        "The on-campus foundation (BIA) is taught by the university's own academics, with admissions managed by Kaplan.",
-    "파운데이션과 IYO를 모두 운영. 비즈니스 계열 2학년 편입 루트가 활발합니다.":
-        "Runs both a foundation and an IYO, with an active year-2 entry route in business subjects.",
+    "캠퍼스 내 파운데이션(BIA)을 대학 교수진이 직접 강의합니다.":
+        "The on-campus foundation (BIA) is taught by the university's own academics.",
+    "대학이 직접 가르치는 파운데이션(IFY)과 Study Group이 운영하는 ISC가 따로 있습니다. IYO는 ISC 쪽이며 비즈니스 계열 2학년 편입 루트가 활발합니다.":
+        "There are two separate routes: the university's own foundation (IFY), taught by Leeds academics, and the Study Group ISC. The IYO belongs to the ISC, and its year-2 business route is well used.",
     "Kaplan 제휴 GIC 파운데이션 경유. 스코틀랜드 명문 특유의 폭넓은 전공 선택이 강점입니다.":
         "Entry via the Kaplan-partnered GIC foundation. The broad subject choice typical of Scottish universities is a strength.",
     "USIC에서 파운데이션·IYO 모두 운영. 공학 계열 진입 경로가 탄탄합니다.":
         "USIC runs both the foundation and the IYO, with a solid entry route into engineering.",
-    "영국 전통 명문. ISC 파운데이션 경유 진학이 기본이며, IYO 개설 여부는 학기별로 달라 기관 공식 페이지에서 확인이 필요합니다.":
-        "A long-established university. Entry runs through the ISC foundation; IYO availability varies by term, so check the provider's official pages.",
+    "영국 전통 명문. ISC에서 인문·사회 / 경영·경제 / 이공계 트랙과 IYO(경영·컴퓨터공학)를 함께 운영합니다.":
+        "A long-established university. Its ISC runs humanities and social science, business and economics, and STEM tracks, plus an IYO in business and computer science.",
     "UNIC에서 파운데이션과 IYO를 모두 운영. 비즈니스·공학 2학년 편입 경로가 열려 있습니다.":
         "UNIC runs both the foundation and the IYO, with year-2 entry open in business and engineering.",
     "공학·컴퓨터 강세의 러셀그룹. 자체 파운데이션으로 이공 계열 진입이 안정적입니다.":
         "A Russell Group university strong in engineering and computing, with a reliable route into STEM through its own foundation.",
-    "영국 국내 평가 1~2위권 스코틀랜드 최고(最古) 명문. 자체 파운데이션으로 진입합니다.":
-        "Scotland's oldest university, ranked first or second in UK domestic league tables. Entry is through its own foundation.",
-    "경영·건축 강세 명문. 대형 국제 파운데이션이 없어 A-level·IB 전형 또는 타 기관 파운데이션 수료 후 지원합니다.":
-        "Renowned for management and architecture. With no large international foundation, entry is by A-level / IB or after completing another provider's foundation.",
-    "캠퍼스 내 INTO 센터에서 파운데이션·IYO 모두 운영. 올해 QS 19계단 상승한 러셀그룹입니다.":
-        "The on-campus INTO centre runs both the foundation and the IYO. A Russell Group university that climbed 19 places in this year's QS rankings.",
+    "영국 국내 평가 1~2위권 스코틀랜드 최고(最古) 명문. 자체 파운데이션은 UCAS가 아니라 대학에 직접 지원합니다.":
+        "Scotland's oldest university, ranked first or second in UK domestic league tables. Its own foundation is applied for directly, not through UCAS.",
+    "경영·건축 강세 명문. Study Group과 10년 협약으로 캠퍼스 안에 국제학습센터(ISC)를 두고 파운데이션과 프리마스터를 운영합니다.":
+        "Renowned for management and architecture. A ten-year agreement with Study Group put an International Study Centre on campus running the foundation and pre-master's courses.",
+    "캠퍼스 내 센터에서 파운데이션·IYO·iCAS를 모두 운영. 올해 QS 19계단 상승한 러셀그룹입니다.":
+        "The on-campus centre runs the foundation, the IYO and iCAS. A Russell Group university that climbed 19 places in this year's QS rankings.",
     "캠퍼스 내 INTO 센터에서 파운데이션·IYO(iCAS) 모두 운영. 학생 도시 물가가 합리적입니다.":
         "The on-campus INTO centre runs both the foundation and the IYO (iCAS), in a student city with reasonable living costs.",
-    "영국 국내 평가 Top 15 단골 명문. ISC 파운데이션 경유, 세부 과정 개설은 기관 공식 페이지에서 최신 확인이 필요합니다.":
-        "A regular in the UK domestic top 15. Entry via the ISC foundation; check the provider's official pages for current course availability.",
+    "영국 국내 평가 Top 15 단골 명문. ISC 파운데이션과 IYO를 함께 운영하며 학비가 같은 급 학교 중 낮은 편입니다.":
+        "A regular in the UK domestic top 15. Its ISC runs both a foundation and an IYO, at fees that sit low for a university of its standing.",
 
     /* --- 학부 계열 --- */
     "경영 · 경제 · 금융": "Business, economics and finance",

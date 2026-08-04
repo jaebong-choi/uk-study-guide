@@ -68,7 +68,7 @@
     </script>
 
     <!-- 한국어/English 사전 · 번역 함수 (t · tr · applyLang · setLang) -->
-    <script src="i18n.js?v=20260816"></script>
+    <script src="i18n.js?v=20260818"></script>
 
     <!-- Tally 팝업 위젯 (무료 상담 신청 폼) -->
     <script async src="https://tally.so/widgets/embed.js"></script>
@@ -858,30 +858,59 @@ const majorCategories = {
         ];
 
         // ── 학부(파운데이션 · IYO) 데이터. QS 2027 (2026.6 발표) 기준 ──
+        // grp은 배열이다. 한 학교가 자체 파운데이션과 사설 기관 파운데이션을 같이 두는 경우가 있다
+        // (리즈 · 리딩 · 맨체스터). fnd에는 실제 센터 이름을 영문 고유명사 그대로 적는다.
         const UG_UNIS = [
-            { n:"Imperial College London", k:"임페리얼 칼리지 런던", qs:2, city:"런던", grp:"direct", fnd:null, iyo:false, url:"https://www.imperial.ac.uk/study/", note:"국제학생 파운데이션 미운영. A-level·IB 등 인정 고교 과정 성적으로 지원하는 최상위 이공계 명문입니다." },
-            { n:"University of Oxford", k:"옥스퍼드대학교", qs:4, city:"옥스퍼드", grp:"direct", fnd:null, iyo:false, url:"https://www.ox.ac.uk/admissions/undergraduate", note:"파운데이션 경로가 없어 A-level·IB 최상위 성적과 입학시험·인터뷰로 선발합니다." },
-            { n:"University of Cambridge", k:"케임브리지대학교", qs:6, city:"케임브리지", grp:"direct", fnd:null, iyo:false, url:"https://www.undergraduate.study.cam.ac.uk/", note:"국제학생 대상 파운데이션이 없어 A-level·IB 최상위 성적으로 지원합니다." },
-            { n:"University College London (UCL)", k:"유니버시티 칼리지 런던", qs:8, city:"런던", grp:"own", fnd:"UCL UPC (자체 운영)", iyo:false, url:"https://www.ucl.ac.uk/prospective-students/undergraduate", note:"1991년부터 자체 국제 파운데이션(UPC)을 운영. 수료 성적으로 UCL 및 다른 상위권 대학 지원이 가능합니다." },
-            { n:"University of Edinburgh", k:"에든버러대학교", qs:35, city:"에든버러", grp:"own", fnd:"자체 국제 파운데이션", iyo:false, url:"https://www.ed.ac.uk/studying/undergraduate", note:"스코틀랜드 4년제 학사 구조로 파운데이션 없이도 지원 폭이 상대적으로 넓은 편입니다." },
-            { n:"King's College London", k:"킹스 칼리지 런던", qs:37, city:"런던", grp:"own", fnd:"King's Foundations (자체)", iyo:false, url:"https://www.kcl.ac.uk/study/undergraduate", note:"런던 중심의 명문으로 자체 국제 파운데이션을 통해 인문·사회·이공 전공으로 진입합니다." },
-            { n:"University of Manchester", k:"맨체스터대학교", qs:40, city:"맨체스터", grp:"into", fnd:"INTO Manchester 제휴", iyo:false, url:"https://www.manchester.ac.uk/study/undergraduate/", note:"INTO Manchester 파운데이션 수료 후 진입. NCUK 연계로 다른 북부 명문 지원도 가능합니다." },
-            { n:"University of Bristol", k:"브리스톨대학교", qs:57, city:"브리스톨", grp:"kaplan", fnd:"Kaplan 제휴 파운데이션", iyo:false, url:"https://www.bristol.ac.uk/study/undergraduate/", note:"이공계·사회과학이 고루 강한 명문으로 파운데이션 경유 진학 수요가 많습니다." },
-            { n:"London School of Economics (LSE)", k:"런던정치경제대학교", qs:63, city:"런던", grp:"direct", fnd:null, iyo:false, url:"https://www.lse.ac.uk/study-at-lse/undergraduate", note:"자체 파운데이션이 없어 A-level·IB 전형이 기본. UCL UPC 등 타 기관 파운데이션 수료 후 지원하는 사례가 많습니다." },
-            { n:"University of Warwick", k:"워릭대학교", qs:68, city:"코번트리", grp:"own", fnd:"Warwick IFP (자체)", iyo:false, url:"https://warwick.ac.uk/study/undergraduate/", note:"1983년부터 운영된 영국 최장수급 자체 파운데이션(IFP). 경영·수학 계열 진입 경로로 특히 유명합니다." },
-            { n:"University of Birmingham", k:"버밍엄대학교", qs:68, city:"버밍엄", grp:"kaplan", fnd:"BIA (Kaplan 제휴)", iyo:false, url:"https://www.birmingham.ac.uk/study/undergraduate", note:"캠퍼스 내 파운데이션(BIA)을 대학 교수진이 직접 강의하고 Kaplan이 입학을 관리합니다." },
-            { n:"University of Leeds", k:"리즈대학교", qs:77, city:"리즈", grp:"sg", fnd:"Leeds ISC (Study Group 제휴)", iyo:true, url:"https://www.leeds.ac.uk/undergraduate", note:"파운데이션과 IYO를 모두 운영. 비즈니스 계열 2학년 편입 루트가 활발합니다." },
-            { n:"University of Glasgow", k:"글래스고대학교", qs:80, city:"글래스고", grp:"kaplan", fnd:"GIC (Kaplan 제휴)", iyo:false, url:"https://www.gla.ac.uk/undergraduate/", note:"Kaplan 제휴 GIC 파운데이션 경유. 스코틀랜드 명문 특유의 폭넓은 전공 선택이 강점입니다." },
-            { n:"University of Sheffield", k:"셰필드대학교", qs:82, city:"셰필드", grp:"sg", fnd:"USIC (Study Group 제휴)", iyo:true, url:"https://www.sheffield.ac.uk/undergraduate", note:"USIC에서 파운데이션·IYO 모두 운영. 공학 계열 진입 경로가 탄탄합니다." },
-            { n:"Durham University", k:"더럼대학교", qs:85, city:"더럼", grp:"sg", fnd:"Durham ISC (Study Group 제휴)", iyo:false, url:"https://www.durham.ac.uk/study/undergraduate/", note:"영국 전통 명문. ISC 파운데이션 경유 진학이 기본이며, IYO 개설 여부는 학기별로 달라 기관 공식 페이지에서 확인이 필요합니다." },
-            { n:"University of Nottingham", k:"노팅엄대학교", qs:97, city:"노팅엄", grp:"kaplan", fnd:"UNIC (Kaplan 제휴)", iyo:true, url:"https://www.nottingham.ac.uk/ugstudy/", note:"UNIC에서 파운데이션과 IYO를 모두 운영. 비즈니스·공학 2학년 편입 경로가 열려 있습니다." },
-            { n:"University of Southampton", k:"사우샘프턴대학교", qs:111, city:"사우샘프턴", grp:"own", fnd:"자체 국제 파운데이션", iyo:false, url:"https://www.southampton.ac.uk/study/undergraduate", note:"공학·컴퓨터 강세의 러셀그룹. 자체 파운데이션으로 이공 계열 진입이 안정적입니다." },
-            { n:"University of St Andrews", k:"세인트앤드루스대학교", qs:115, city:"세인트앤드루스", grp:"own", fnd:"자체 International Foundation", iyo:false, url:"https://www.st-andrews.ac.uk/study/ug/", note:"영국 국내 평가 1~2위권 스코틀랜드 최고(最古) 명문. 자체 파운데이션으로 진입합니다." },
-            { n:"University of Bath", k:"바스대학교", qs:125, city:"바스", grp:"direct", fnd:null, iyo:false, url:"https://www.bath.ac.uk/courses/", note:"경영·건축 강세 명문. 대형 국제 파운데이션이 없어 A-level·IB 전형 또는 타 기관 파운데이션 수료 후 지원합니다." },
-            { n:"University of Exeter", k:"엑서터대학교", qs:136, city:"엑서터", grp:"into", fnd:"INTO Exeter (캠퍼스 내)", iyo:true, url:"https://www.exeter.ac.uk/study/undergraduate/", note:"캠퍼스 내 INTO 센터에서 파운데이션·IYO 모두 운영. 올해 QS 19계단 상승한 러셀그룹입니다." },
-            { n:"Newcastle University", k:"뉴캐슬대학교", qs:149, city:"뉴캐슬", grp:"into", fnd:"INTO Newcastle (캠퍼스 내)", iyo:true, url:"https://www.ncl.ac.uk/undergraduate/", note:"캠퍼스 내 INTO 센터에서 파운데이션·IYO(iCAS) 모두 운영. 학생 도시 물가가 합리적입니다." },
-            { n:"Lancaster University", k:"랭커스터대학교", qs:164, city:"랭커스터", grp:"into", fnd:"Lancaster ISC (INTO 제휴)", iyo:false, url:"https://www.lancaster.ac.uk/study/undergraduate/", note:"영국 국내 평가 Top 15 단골 명문. ISC 파운데이션 경유, 세부 과정 개설은 기관 공식 페이지에서 최신 확인이 필요합니다." }
+            { n:"Imperial College London", k:"임페리얼 칼리지 런던", qs:2, city:"런던", grp:["direct"], fnd:null, iyo:false, url:"https://www.imperial.ac.uk/study/", note:"국제학생 파운데이션 미운영. A-level·IB 등 인정 고교 과정 성적으로 지원하는 최상위 이공계 명문입니다." },
+            { n:"University of Oxford", k:"옥스퍼드대학교", qs:4, city:"옥스퍼드", grp:["direct"], fnd:null, iyo:false, url:"https://www.ox.ac.uk/admissions/undergraduate", note:"파운데이션 경로가 없어 A-level·IB 최상위 성적과 입학시험·인터뷰로 선발합니다." },
+            { n:"University of Cambridge", k:"케임브리지대학교", qs:6, city:"케임브리지", grp:["direct"], fnd:null, iyo:false, url:"https://www.undergraduate.study.cam.ac.uk/", note:"국제학생 대상 파운데이션이 없어 A-level·IB 최상위 성적으로 지원합니다." },
+            { n:"University College London (UCL)", k:"유니버시티 칼리지 런던", qs:8, city:"런던", grp:["own"], fnd:"UCL UPC", iyo:false, url:"https://www.ucl.ac.uk/prospective-students/undergraduate", note:"1991년부터 자체 국제 파운데이션(UPC)을 운영. 수료 성적으로 UCL 및 다른 상위권 대학 지원이 가능합니다." },
+            { n:"University of Edinburgh", k:"에든버러대학교", qs:35, city:"에든버러", grp:["own"], fnd:"International Foundation Programme", iyo:false, url:"https://www.ed.ac.uk/studying/undergraduate", note:"스코틀랜드 4년제 학사 구조로 파운데이션 없이도 지원 폭이 상대적으로 넓은 편입니다." },
+            { n:"King's College London", k:"킹스 칼리지 런던", qs:37, city:"런던", grp:["own"], fnd:"King's International Foundation", iyo:false, url:"https://www.kcl.ac.uk/study/undergraduate", note:"런던 중심의 명문으로 자체 국제 파운데이션을 통해 인문·사회·이공 전공으로 진입합니다." },
+            { n:"University of Manchester", k:"맨체스터대학교", qs:40, city:"맨체스터", grp:["into","own"], fnd:"INTO Manchester (NCUK)", iyo:false, url:"https://www.manchester.ac.uk/study/undergraduate/", note:"INTO Manchester 파운데이션 수료 후 진입. NCUK 연계로 다른 북부 명문 지원도 가능합니다." },
+            { n:"University of Bristol", k:"브리스톨대학교", qs:57, city:"브리스톨", grp:["own"], fnd:"International Foundation Programme", iyo:false, url:"https://www.bristol.ac.uk/study/undergraduate/", note:"이공계·사회과학이 고루 강한 명문으로 파운데이션 경유 진학 수요가 많습니다. Kaplan·Kings 런던 파운데이션에는 브리스톨 진학 보장 루트가 따로 있습니다." },
+            { n:"London School of Economics (LSE)", k:"런던정치경제대학교", qs:63, city:"런던", grp:["direct"], fnd:null, iyo:false, url:"https://www.lse.ac.uk/study-at-lse/undergraduate", note:"자체 파운데이션이 없어 A-level·IB 전형이 기본. UCL UPC 등 타 기관 파운데이션 수료 후 지원하는 사례가 많습니다." },
+            { n:"University of Warwick", k:"워릭대학교", qs:68, city:"코번트리", grp:["own"], fnd:"Warwick IFP", iyo:false, url:"https://warwick.ac.uk/study/undergraduate/", note:"1983년부터 운영된 영국 최장수급 자체 파운데이션(IFP). 경영·수학 계열 진입 경로로 특히 유명합니다." },
+            { n:"University of Birmingham", k:"버밍엄대학교", qs:68, city:"버밍엄", grp:["own"], fnd:"Birmingham International Academy (BIA)", iyo:false, url:"https://www.birmingham.ac.uk/study/undergraduate", note:"캠퍼스 내 파운데이션(BIA)을 대학 교수진이 직접 강의합니다." },
+            { n:"University of Leeds", k:"리즈대학교", qs:77, city:"리즈", grp:["own","sg"], fnd:"International Foundation Year · Leeds ISC", iyo:true, url:"https://www.leeds.ac.uk/undergraduate", note:"대학이 직접 가르치는 파운데이션(IFY)과 Study Group이 운영하는 ISC가 따로 있습니다. IYO는 ISC 쪽이며 비즈니스 계열 2학년 편입 루트가 활발합니다." },
+            { n:"University of Glasgow", k:"글래스고대학교", qs:80, city:"글래스고", grp:["kaplan"], fnd:"Glasgow International College (GIC)", iyo:false, url:"https://www.gla.ac.uk/undergraduate/", note:"Kaplan 제휴 GIC 파운데이션 경유. 스코틀랜드 명문 특유의 폭넓은 전공 선택이 강점입니다." },
+            { n:"University of Sheffield", k:"셰필드대학교", qs:82, city:"셰필드", grp:["sg"], fnd:"Sheffield International College (USIC)", iyo:true, url:"https://www.sheffield.ac.uk/undergraduate", note:"USIC에서 파운데이션·IYO 모두 운영. 공학 계열 진입 경로가 탄탄합니다." },
+            { n:"Durham University", k:"더럼대학교", qs:85, city:"더럼", grp:["sg"], fnd:"Durham University ISC", iyo:true, url:"https://www.durham.ac.uk/study/undergraduate/", note:"영국 전통 명문. ISC에서 인문·사회 / 경영·경제 / 이공계 트랙과 IYO(경영·컴퓨터공학)를 함께 운영합니다." },
+            { n:"University of Nottingham", k:"노팅엄대학교", qs:97, city:"노팅엄", grp:["kaplan"], fnd:"Nottingham International College (UNIC)", iyo:true, url:"https://www.nottingham.ac.uk/ugstudy/", note:"UNIC에서 파운데이션과 IYO를 모두 운영. 비즈니스·공학 2학년 편입 경로가 열려 있습니다." },
+            { n:"Queen Mary University of London", k:"퀸메리 런던대학교", qs:103, city:"런던", grp:["own"], fnd:"QMUL International Foundation", iyo:false, url:"https://www.qmul.ac.uk", note:"런던대학교(UoL) 소속 러셀그룹으로 파운데이션을 대학이 직접 운영합니다. 인문사회·경영·이공계 세 트랙이 있습니다." },
+            { n:"University of Southampton", k:"사우샘프턴대학교", qs:111, city:"사우샘프턴", grp:["own"], fnd:"International Foundation Year", iyo:false, url:"https://www.southampton.ac.uk/study/undergraduate", note:"공학·컴퓨터 강세의 러셀그룹. 자체 파운데이션으로 이공 계열 진입이 안정적입니다." },
+            { n:"University of St Andrews", k:"세인트앤드루스대학교", qs:115, city:"세인트앤드루스", grp:["own"], fnd:"International Foundation Programme", iyo:false, url:"https://www.st-andrews.ac.uk/study/ug/", note:"영국 국내 평가 1~2위권 스코틀랜드 최고(最古) 명문. 자체 파운데이션은 UCAS가 아니라 대학에 직접 지원합니다." },
+            { n:"University of Bath", k:"바스대학교", qs:125, city:"바스", grp:["sg"], fnd:"University of Bath ISC", iyo:false, url:"https://www.bath.ac.uk/courses/", note:"경영·건축 강세 명문. Study Group과 10년 협약으로 캠퍼스 안에 국제학습센터(ISC)를 두고 파운데이션과 프리마스터를 운영합니다." },
+            { n:"University of Exeter", k:"엑서터대학교", qs:136, city:"엑서터", grp:["into"], fnd:"Exeter International Study Centre (INTO)", iyo:true, url:"https://www.exeter.ac.uk/study/undergraduate/", note:"캠퍼스 내 센터에서 파운데이션·IYO·iCAS를 모두 운영. 올해 QS 19계단 상승한 러셀그룹입니다." },
+            { n:"University of Liverpool", k:"리버풀대학교", qs:139, city:"리버풀", grp:["kaplan"], fnd:"University of Liverpool International College", iyo:false, url:"https://www.liverpool.ac.uk", maj:["수의학","건축학","경영학","컴퓨터과학"] },
+            { n:"Newcastle University", k:"뉴캐슬대학교", qs:149, city:"뉴캐슬", grp:["into"], fnd:"Newcastle University ISC", iyo:true, url:"https://www.ncl.ac.uk/undergraduate/", note:"캠퍼스 내 INTO 센터에서 파운데이션·IYO(iCAS) 모두 운영. 학생 도시 물가가 합리적입니다." },
+            { n:"University of York", k:"요크대학교", qs:158, city:"요크", grp:["kaplan"], fnd:"York International Pathway College (IPC)", iyo:true, url:"https://www.york.ac.uk", note:"Kaplan이 운영하는 IPC에서 파운데이션과 IYO를 함께 두며, 9월 외에 1월 입학도 받습니다." },
+            { n:"Lancaster University", k:"랭커스터대학교", qs:164, city:"랭커스터", grp:["into"], fnd:"Lancaster University ISC", iyo:true, url:"https://www.lancaster.ac.uk/study/undergraduate/", note:"영국 국내 평가 Top 15 단골 명문. ISC 파운데이션과 IYO를 함께 운영하며 학비가 같은 급 학교 중 낮은 편입니다." },
+            { n:"Cardiff University", k:"카디프대학교", qs:179, city:"카디프", grp:["sg"], fnd:"Cardiff University ISC", iyo:true, url:"https://www.cardiff.ac.uk", maj:["저널리즘·미디어","건축학","심리학","경영학"] },
+            { n:"University of Reading", k:"리딩대학교", qs:196, city:"리딩", grp:["own","ceg"], fnd:"Reading IFP · ONCAMPUS Reading", iyo:false, url:"https://www.reading.ac.uk", maj:["부동산학","경영학","식품과학","농업학"] },
+            { n:"Loughborough University", k:"러프버러대학교", qs:203, city:"러프버러", grp:["ceg"], fnd:"ONCAMPUS Loughborough", iyo:false, url:"https://www.lboro.ac.uk", note:"스포츠 분야 세계 1위권 특성화 명문. 파운데이션은 캠퍼스 안 CEG ONCAMPUS 센터가 맡고 수료 시 진학이 보장됩니다." },
+            { n:"University of Surrey", k:"서리대학교", qs:246, city:"길퍼드", grp:["sg"], fnd:"Surrey International Study Centre", iyo:true, url:"https://www.surrey.ac.uk", maj:["호텔·관광경영","경영학","전기전자공학"] },
+            { n:"University of Sussex", k:"서식스대학교", qs:273, city:"브라이턴", grp:["sg"], fnd:"Sussex International Study Centre", iyo:false, url:"https://www.sussex.ac.uk", note:"국제개발학이 세계 최상위 평가를 받은 연구 명문. 파운데이션은 캠퍼스 안 ISC에서 운영합니다." },
+            { n:"University of Leicester", k:"레스터대학교", qs:314, city:"레스터", grp:["navitas"], fnd:"Leicester Global Study Centre", iyo:true, url:"https://le.ac.uk", maj:["고고학","범죄학","우주과학·천문학","경영학"], note:"Navitas가 운영하는 캠퍼스 내 센터에서 파운데이션과 경영 IYO를 함께 둡니다. 파운데이션 영어 요건이 IELTS 4.5로 낮은 편입니다." },
+            { n:"Brunel University of London", k:"브루넬 런던대학교", qs:353, city:"런던", grp:["navitas"], fnd:"Brunel Pathway College", iyo:true, url:"https://www.brunel.ac.uk", maj:["산업디자인","기계공학","경영학","컴퓨터공학"] },
+            { n:"Birkbeck, University of London", k:"버크벡 런던대학교", qs:354, city:"런던", grp:["own"], fnd:"Integrated Foundation Year", iyo:false, url:"https://www.bbk.ac.uk", maj:["심리학","경영","법학","금융"] },
+            { n:"City St George's, University of London", k:"시티 세인트조지스", qs:361, city:"런던", grp:["into"], fnd:"City St George's ISC", iyo:true, url:"https://www.citystgeorges.ac.uk", maj:["경영·금융","저널리즘","간호·보건","법학"] },
+            { n:"Oxford Brookes University", k:"옥스퍼드브룩스대학교", qs:411, city:"옥스퍼드", grp:["own"], fnd:"International Foundation Diploma", iyo:false, url:"https://www.brookes.ac.uk", maj:["경영","호스피탈리티매니지먼트","건축","자동차공학"] },
+            { n:"Aston University", k:"아스턴대학교", qs:416, city:"버밍엄", grp:["ceg"], fnd:"ONCAMPUS Aston", iyo:true, url:"https://www.aston.ac.uk", maj:["경영학","회계·금융","약학","기계공학"] },
+            { n:"SOAS University of London", k:"소아스 런던대학교", qs:458, city:"런던", grp:["own"], fnd:"SOAS IFCELS", iyo:false, url:"https://www.soas.ac.uk", maj:["개발학","국제관계·정치학","법학","인류학"] },
+            { n:"Royal Holloway, University of London", k:"로열홀로웨이", qs:485, city:"이검", grp:["sg"], fnd:"Royal Holloway ISC", iyo:true, url:"https://www.royalholloway.ac.uk", maj:["정보보안","경영학","심리학","공연예술"] },
+            { n:"Northumbria University", k:"노섬브리아대학교", qs:528, city:"뉴캐슬", grp:["etc"], fnd:"Northumbria University Pathway (QA Higher Education)", iyo:false, url:"https://www.northumbria.ac.uk", maj:["디자인","경영","컴퓨터공학","건축"] },
+            { n:"Goldsmiths, University of London", k:"골드스미스 런던대학교", qs:null, city:"런던", grp:["own"], fnd:"International Foundation Certificate (IFC)", iyo:false, url:"https://www.gold.ac.uk", maj:["파인아트","디자인","미디어·커뮤니케이션","심리학"], note:"예술·미디어 특성화 대학. 파운데이션 수료 기준을 채우면 학부 진학이 보장되며, 디자인 계열은 영어 요건이 높고 예술 계열은 포트폴리오를 봅니다." },
+            { n:"Royal Veterinary College", k:"로열수의과대학", qs:null, city:"런던", grp:["direct"], fnd:null, iyo:false, url:"https://www.rvc.ac.uk", maj:["수의학","수의간호학","생물의학"] },
+            { n:"University of Westminster", k:"웨스트민스터대학교", qs:null, city:"런던", grp:["own"], fnd:"Integrated Foundation Year", iyo:false, url:"https://www.westminster.ac.uk", maj:["미디어·커뮤니케이션","패션","경영","컴퓨터과학"] },
+            { n:"Middlesex University", k:"미들섹스대학교", qs:null, city:"런던", grp:["own"], fnd:"Middlesex IFP", iyo:false, url:"https://www.mdx.ac.uk", maj:["경영","예술디자인","간호학","컴퓨터공학"] },
+            { n:"University of Central Lancashire", k:"센트럴랭커셔대학교", qs:null, city:"프레스턴", grp:["own"], fnd:"Foundation Entry", iyo:false, url:"https://www.lancashire.ac.uk", maj:["약학","미디어·저널리즘","항공운항학","경영"] },
+            { n:"De Montfort University", k:"드몽포트대학교", qs:null, city:"레스터", grp:["etc"], fnd:"DMU International College (Oxford International)", iyo:false, url:"https://www.dmu.ac.uk", maj:["패션디자인","게임개발","경영","약학"] },
+            { n:"Anglia Ruskin University", k:"앵글리아러스킨대학교", qs:null, city:"케임브리지", grp:["navitas"], fnd:"ARU College", iyo:true, url:"https://www.aru.ac.uk", maj:["간호·보건","경영","심리학","컴퓨터공학"] },
+            { n:"Liverpool John Moores University", k:"리버풀존무어스대학교", qs:null, city:"리버풀", grp:["sg"], fnd:"LJMU International Study Centre", iyo:false, url:"https://www.ljmu.ac.uk", maj:["스포츠과학","경영","기계공학","미디어"] }
         ];
+        // 사설 기관이 캠퍼스 안에서 운영하는 파운데이션(온캠퍼스) 판별용
+        const PRIVATE_GRPS = ['kaplan', 'sg', 'into', 'ceg', 'navitas', 'etc'];
 
         // ── 계열별 추천 전공(학부) ──────────────────────────────────
         const fieldMajors = {
@@ -893,13 +922,14 @@ const majorCategories = {
             arts: { label:'인문 · 어학 · 예술', majors:['영문학 (English)','언어학 (Linguistics)','역사학 (History)','건축학 (Architecture)','디자인 (Design)'] }
         };
 
-        // ── 사설 파운데이션 주요 기관 · 진학 가능 대학(예시) ─────────
+        // ── 특정 대학 전용이 아닌 경로. 위 학교 목록의 온캠퍼스 파운데이션과는 성격이 다르다 ──
         const privateFoundations = [
-            { name:'CEG ONCAMPUS', tag:'대학 캠퍼스 내 · 오픈 초이스', unis:'Westminster · Southampton · Aston · Loughborough · Sunderland · London 소재 다수' },
-            { name:'INTO', tag:'대학 제휴 + INTO London(오픈 초이스)', unis:'Manchester · Newcastle · Exeter · East Anglia(UEA) · City St George’s · Stirling · Queen’s Belfast' },
-            { name:'Kings Education', tag:'오픈 초이스 · Bristol 진학 보장', unis:'Bristol(보장) · Exeter · Leeds · Newcastle · Aston · 그 외 다수' },
-            { name:'KIP (Kaplan Int’l Pathways)', tag:'오픈 초이스 · Kaplan London→Bristol 보장', unis:'Bristol(보장) · Birmingham · Glasgow · Nottingham · York · Liverpool · Bournemouth · UWE · Essex' },
-            { name:'CATS College', tag:'파운데이션 · A-level 병행', unis:'중상위권 대학 오픈 초이스(성적에 맞춰 지원)' }
+            { name:'Kaplan International Pathways', tag:'오픈 초이스 · 런던 센터는 브리스톨 진학 보장', unis:'버밍엄 · 글래스고 · 노팅엄 · 요크 · 리버풀 · 브리스톨(보장)' },
+            { name:'Kings Education', tag:'오픈 초이스 · A-level 과정 병행', unis:'브리스톨(보장) · 리즈 · 뉴캐슬 · 아스턴 외 다수' },
+            { name:'CEG ONCAMPUS', tag:'대학 캠퍼스 안 · 센터 간 이동 가능', unis:'아스턴 · 러프버러 · 리딩 · 사우샘프턴 · 런던 소재 다수' },
+            { name:'INTO', tag:'대학 제휴 + INTO London(오픈 초이스)', unis:'맨체스터 · 뉴캐슬 · 엑서터 · 랭커스터 · 시티 세인트조지스' },
+            { name:'CATS College · DLD College', tag:'파운데이션과 A-level을 함께 운영', unis:'성적에 맞춰 중상위권 대학에 오픈 초이스로 지원' },
+            { name:'식스폼 칼리지 (A-level 2년)', tag:'파운데이션이 아닌 정규 고교 과정', unis:'옥스퍼드 · 케임브리지 · 임페리얼 · LSE · 로열수의과대학처럼 파운데이션을 두지 않는 학교' }
         ];
 
         // ── 대학별 상세 안내 데이터 ─────────────────────────────────
@@ -967,7 +997,16 @@ const majorCategories = {
             "University of Sussex": "uk-sussex", "University of York": "uk-york",
             "Queen Mary University of London": "uk-qmul", "University of Leicester": "uk-leicester",
             "Goldsmiths, University of London": "uk-goldsmiths", "Loughborough University": "uk-loughborough",
-            "Cranfield University": "uk-cranfield"
+            "Cranfield University": "uk-cranfield", "Cardiff University": "uk-cardiff",
+            "University of Liverpool": "uk-liverpool", "University of Surrey": "uk-surrey",
+            "University of Reading": "uk-reading", "Royal Holloway, University of London": "uk-royal-holloway",
+            "City St George's, University of London": "uk-city", "Brunel University of London": "uk-brunel",
+            "SOAS University of London": "uk-soas", "Birkbeck, University of London": "uk-birkbeck",
+            "Royal Veterinary College": "uk-rvc", "Aston University": "uk-aston",
+            "Oxford Brookes University": "uk-oxford-brookes", "University of Westminster": "uk-westminster",
+            "Northumbria University": "uk-northumbria", "Middlesex University": "uk-middlesex",
+            "University of Central Lancashire": "uk-uclan", "De Montfort University": "uk-dmu",
+            "Anglia Ruskin University": "uk-anglia-ruskin", "Liverpool John Moores University": "uk-ljmu"
         };
         function hubUniUrl(name) {
             const id = HUB_UNI[UNI_ALIAS[name] || name];
@@ -982,8 +1021,8 @@ const majorCategories = {
             if (!m) { m = document.createElement('div'); m.id = 'uni-modal'; document.body.appendChild(m); }
             const routes = [];
             if (ug) {
-                if (ug.grp === 'direct') routes.push(`<span class="route-badge bg-gray-100 text-gray-600"><i class="fa-solid fa-arrow-right text-[10px]"></i> ${t('routeAlevel')}</span>`);
-                if (ug.fnd) routes.push(`<span class="route-badge bg-blue-50 text-royal"><i class="fa-solid fa-layer-group text-[10px]"></i> ${tr(ug.fnd)}</span>`);
+                routes.push(grpBadges(ug.grp));
+                if (ug.fnd) routes.push(`<span class="route-badge bg-gray-50 text-gray-700"><i class="fa-solid fa-layer-group text-[10px]"></i> ${ug.fnd}</span>`);
                 if (ug.iyo) routes.push(`<span class="route-badge bg-[#EAFFD0] text-[#3c6b00]"><i class="fa-solid fa-forward text-[10px]"></i> ${t('routeIyo2')}</span>`);
             }
             m.innerHTML = `
@@ -992,7 +1031,7 @@ const majorCategories = {
                     <div class="relative max-w-2xl mx-auto mt-8 md:mt-16 mb-8 mx-4 sm:mx-auto bg-white rounded-3xl shadow-2xl max-h-[85vh] overflow-y-auto">
                         <div class="bg-ink2 text-white p-8 md:p-10 relative">
                             <button onclick="closeUniDetail()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
-                            ${ug ? `<span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-[11px] font-semibold tracking-widest text-gray-300 mb-4 uppercase">${t('qsBadge')(ug.qs)}</span>` : ''}
+                            ${ug && ug.qs ? `<span class="inline-block py-1 px-3 border border-gray-500 rounded-full text-[11px] font-semibold tracking-widest text-gray-300 mb-4 uppercase">${t('qsBadge')(ug.qs)}</span>` : ''}
                             <h3 class="text-2xl md:text-3xl font-bold tracking-tight">${name}</h3>
                             <p class="text-gray-400 mt-1">${t('modalSubName')(info.k)}</p>
                         </div>
@@ -1006,7 +1045,7 @@ const majorCategories = {
                             <p class="text-[13px] font-semibold text-ink2 mb-2.5">${t('topMajors')}</p>
                             <div class="flex flex-wrap gap-2 mb-7">${info.majors.map(mj => `<span class="info-badge text-[13px]">${tr(mj)}</span>`).join('')}</div>
                             ${routes.length ? `<p class="text-[13px] font-semibold text-ink2 mb-2.5">${t('ugRoutesLabel')}</p><div class="flex flex-wrap gap-2 mb-3">${routes.join('')}</div>` : ''}
-                            ${ug ? `<p class="text-[13px] text-mute leading-relaxed mb-7">${tr(ug.note)}</p>` : '<div class="mb-4"></div>'}
+                            ${ug && ug.note ? `<p class="text-[13px] text-mute leading-relaxed mb-7">${tr(ug.note)}</p>` : '<div class="mb-4"></div>'}
                             <div class="flex flex-col gap-2.5">
                                 <a href="${ug ? ug.url : officialSchoolUrl(name)}" target="_blank" rel="noopener" class="consult-banner text-center font-semibold py-3.5 px-4 w-full flex items-center justify-center gap-2 text-[15px]"><i class="fa-solid fa-globe text-xs"></i> ${t('visitOfficial')}</a>
                                 ${hubUniUrl(name) ? `<a href="${hubUniUrl(name)}" target="_blank" rel="noopener" class="uni-link-banner is-primary text-center font-semibold py-3 px-4 w-full flex items-center justify-center gap-2 text-[14px]"><i class="fa-solid fa-table-list text-[11px] opacity-70"></i> ${t('hubDetail')}</a>` : ''}
@@ -1687,7 +1726,16 @@ const majorCategories = {
         }
 
         // ── 학부 결과 ────────────────────────────────────────────────
-        const GRP_LABEL = { direct: 'A-level · IB 전형', own: '자체 파운데이션', kaplan: 'Kaplan 제휴', sg: 'Study Group 제휴', into: 'INTO 제휴' };
+        const GRP_KEY = { direct: 'grpDirect', own: 'grpOwn', kaplan: 'grpKaplan', sg: 'grpSg', into: 'grpInto', ceg: 'grpCeg', navitas: 'grpNavitas', etc: 'grpEtc' };
+        // 운영 형태 배지: A-level은 회색, 대학 자체는 파랑, 사설 기관 온캠퍼스는 황토색
+        function grpBadges(grps) {
+            return (grps || []).map(g => {
+                const tone = g === 'direct' ? 'bg-gray-100 text-gray-600'
+                    : g === 'own' ? 'bg-blue-50 text-royal' : 'bg-amber-50 text-amber-800';
+                const icon = g === 'direct' ? 'fa-arrow-right' : g === 'own' ? 'fa-building-columns' : 'fa-handshake';
+                return `<span class="route-badge ${tone}"><i class="fa-solid ${icon} text-[10px]"></i> ${t(GRP_KEY[g])}</span>`;
+            }).join('');
+        }
         let ugFilter = 'all';
 
         function ugRouteDecision(s) {
@@ -1739,9 +1787,10 @@ const majorCategories = {
         };
         function fieldMajorsOf(u) {
             const info = uniInfo(u.n);
+            const majors = (info && info.majors) || u.maj || []; // 상세 정보가 없는 학교는 UG_UNIS의 maj를 쓴다
             const keys = FIELD_MAJOR_KEYS[currentState.field] || [];
-            if (!info || !keys.length) return [];
-            return info.majors.filter(m => keys.some(k => m.includes(k))).slice(0, 3);
+            if (!majors.length || !keys.length) return [];
+            return majors.filter(m => keys.some(k => m.includes(k))).slice(0, 3);
         }
 
         // 성적(내신)별 파운데이션 유형 추천. 사설은 공통 추천, 성적별 유형을 병행 추천
@@ -1767,10 +1816,10 @@ const majorCategories = {
             const hasInfo = !!uniInfo(u.n);
             // 선택 계열과 매칭되는 전공 우선, 없으면 학교 우세전공 상위 3개 표시
             let rel = fieldMajorsOf(u);
-            if (!rel.length && hasInfo) rel = uniInfo(u.n).majors.slice(0, 3);
+            if (!rel.length) rel = ((hasInfo && uniInfo(u.n).majors) || u.maj || []).slice(0, 3);
             const routes = [];
-            if (u.grp === 'direct') routes.push(`<span class="route-badge bg-gray-100 text-gray-600"><i class="fa-solid fa-arrow-right text-[10px]"></i> ${t('routeAlevel')}</span>`);
-            if (u.fnd) routes.push(`<span class="route-badge bg-blue-50 text-royal"><i class="fa-solid fa-layer-group text-[10px]"></i> ${tr(u.fnd)}</span>`);
+            routes.push(grpBadges(u.grp));
+            if (u.fnd) routes.push(`<span class="route-badge bg-gray-50 text-gray-700"><i class="fa-solid fa-layer-group text-[10px]"></i> ${u.fnd}</span>`);
             if (u.iyo) routes.push(`<span class="route-badge bg-[#EAFFD0] text-[#3c6b00]"><i class="fa-solid fa-forward text-[10px]"></i> IYO</span>`);
             return `
                 <div class="apple-card px-5 py-3.5 md:px-6 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4">
@@ -1805,8 +1854,14 @@ const majorCategories = {
             document.querySelectorAll('.filter-chip[data-f]').forEach(ch => ch.classList.toggle('active', ch.dataset.f === ugFilter));
             document.querySelectorAll('.filter-chip[data-s]').forEach(ch => ch.classList.toggle('active', ch.dataset.s === ugSort));
             const list = UG_UNIS
-                .filter(u => ugFilter === 'all' ? true : ugFilter === 'iyo' ? u.iyo : ugFilter === 'fnd' ? !!u.fnd : u.grp === 'direct')
-                .sort((a, b) => ugSort === 'name' ? a.n.localeCompare(b.n) : ugSort === 'kname' ? a.k.localeCompare(b.k, 'ko') : a.qs - b.qs);
+                .filter(u => ugFilter === 'all' ? true
+                    : ugFilter === 'iyo' ? u.iyo
+                    : ugFilter === 'own' ? u.grp.includes('own')
+                    : ugFilter === 'private' ? u.grp.some(g => PRIVATE_GRPS.includes(g))
+                    : ugFilter === 'fnd' ? !!u.fnd
+                    : u.grp.includes('direct'))
+                // 순위 미부여 학교(qs:null)는 목록 끝으로 보낸다
+                .sort((a, b) => ugSort === 'name' ? a.n.localeCompare(b.n) : ugSort === 'kname' ? a.k.localeCompare(b.k, 'ko') : (a.qs || 9999) - (b.qs || 9999));
             const pages = Math.max(1, Math.ceil(list.length / UG_PAGE_SIZE));
             if (ugPage > pages) ugPage = pages;
             const slice = list.slice((ugPage - 1) * UG_PAGE_SIZE, ugPage * UG_PAGE_SIZE);
@@ -1885,8 +1940,9 @@ const majorCategories = {
                         </div>
                         <div id="ug-list-top" class="flex flex-wrap items-center justify-center gap-2.5 mb-3">
                             <button class="filter-chip" data-f="all" onclick="renderUgCards('all')">${t('filterAll')}</button>
+                            <button class="filter-chip" data-f="own" onclick="renderUgCards('own')">${t('filterOwn')}</button>
+                            <button class="filter-chip" data-f="private" onclick="renderUgCards('private')">${t('filterPrivate')}</button>
                             <button class="filter-chip" data-f="iyo" onclick="renderUgCards('iyo')">${t('filterIyo')}</button>
-                            <button class="filter-chip" data-f="fnd" onclick="renderUgCards('fnd')">${t('filterFnd')}</button>
                             <button class="filter-chip" data-f="direct" onclick="renderUgCards('direct')">${t('filterDirect')}</button>
                         </div>
                         <div class="flex flex-wrap items-center justify-center gap-2.5 mb-4">
@@ -2010,6 +2066,22 @@ const majorCategories = {
                                     <p class="mt-2">${t('guRec')}</p>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="max-w-4xl mx-auto mt-14">
+                            <h4 class="text-xl md:text-2xl font-bold text-black tracking-tight mb-2">${t('pfTitle')}</h4>
+                            <p class="text-[15px] text-mute leading-relaxed mb-5">${t('pfSub')}</p>
+                            <div class="apple-card divide-y divide-gray-100">
+                                ${privateFoundations.map(f => `
+                                <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-5">
+                                    <div class="sm:w-60 shrink-0">
+                                        <p class="text-[15px] font-bold text-black leading-snug">${tr(f.name)}</p>
+                                        <p class="text-[12px] text-royal font-semibold mt-0.5">${tr(f.tag)}</p>
+                                    </div>
+                                    <p class="text-[13px] text-mute leading-relaxed">${tr(f.unis)}</p>
+                                </div>`).join('')}
+                            </div>
+                            <p class="text-[13px] text-mute mt-4 leading-relaxed">${t('pfNote')}</p>
                         </div>
 
                         <p class="text-center text-[14px] text-gray-700 mt-10 max-w-3xl mx-auto leading-relaxed">${t('nextStepLine')(fm ? tr(fm.label) : null)}</p>
