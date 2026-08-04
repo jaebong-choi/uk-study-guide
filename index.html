@@ -1040,6 +1040,7 @@ const majorCategories = {
 
         const INFO_ARTICLES = {};
         const INFO_COMMON = [
+            { slug: 'pharmacy-registration', tracks: ['ug'], fields: ['sci'] }, // 학부 약학(MPharm) 전용
             { slug: 'subject-rankings' }, // 학부·석사 공통 — 학교를 고르는 순서에 관한 글이다
             { slug: 'london-costs' },     // 학부·석사 공통 — 생활비 기준은 트랙과 무관하다
             { slug: 'ug-fees-2026',       tracks: ['ug'] },
@@ -1080,6 +1081,9 @@ const majorCategories = {
             if (!sec || !wrap) return;   // 아직 결과 화면이 아니다
             const rows = ((currentState.major && INFO_ARTICLES[currentState.major]) || []).concat(INFO_COMMON)
                 .filter(a => !a.tracks || a.tracks.indexOf(track) > -1)
+                // fields를 주면 학부 계열(biz·eng·cs·soc·sci·arts)이 맞을 때만 나온다.
+                // 석사 전공별 글은 INFO_ARTICLES 키로 걸고, 학부 전공별 글은 이 필터를 쓴다.
+                .filter(a => !a.fields || a.fields.indexOf(currentState.field) > -1)
                 .map(a => ARTICLE_INDEX && ARTICLE_INDEX[a.slug]
                     ? Object.assign({ url: HUB_ARTICLE + a.slug + '.html' }, ARTICLE_INDEX[a.slug])
                     : null)
