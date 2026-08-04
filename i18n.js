@@ -168,6 +168,9 @@ const I18N = {
         topSub: '최상위권(옥스브리지 · 임페리얼 · LSE)은 IYO가 없어, 자체 파운데이션과 A-level · IB 전형을 함께 설계합니다.',
         bothTitle: '파운데이션 · IYO 병행 전략',
         bothSub: '두 경로 모두 지원 자격이 되어, 대학별로 유리한 쪽을 골라 지원하는 전략이 가능합니다.',
+        directUgTitle: 'A-level · IB 다이렉트 지원',
+        directUgSub: '이미 영국식 입학 자격을 갖추고 있어, 파운데이션 없이 UCAS로 학사 1학년에 바로 지원하는 경로입니다.',
+        rIntl: '해외고 · 국제학교 과정(A-level · IB 등)은 영국 대학이 그대로 인정하는 입학 자격입니다. 파운데이션을 거칠 필요 없이 예상 성적(predicted grades)으로 UCAS 지원이 가능하고, 옥스브리지 · G5도 이 전형으로 선발합니다. 성적이 목표 대학 기준에 못 미칠 때만 파운데이션을 보완 카드로 검토하면 됩니다.',
         rHs2: '고2 수료 예정 단계에서는 파운데이션이 유일하면서도 가장 빠른 경로입니다. 또래가 고3을 보내는 1년 동안 영국에서 파운데이션을 이수하고, 남들보다 빨리 학사 1학년에 진입할 수 있습니다.',
         rEtc: '내신 산출이 어려운 경우에도 파운데이션은 자체 평가 기준(인터뷰 · 내부 시험 등)으로 입학이 가능해 실질적인 진입 문이 가장 넓습니다.',
         rFast: '고교 졸업(예정) 자격과 내신을 갖추고 계셔서 IYO 지원이 가능하며, 빠른 학위 취득을 원하시는 목표와 가장 잘 맞습니다.',
@@ -452,6 +455,9 @@ const I18N = {
         topSub: "The very top universities — Oxbridge, Imperial, LSE — run no IYO, so the plan combines university-run foundations with A-level / IB entry.",
         bothTitle: "Foundation and IYO combined",
         bothSub: "You qualify for both routes, so you can pick whichever suits each university best.",
+        directUgTitle: "Direct entry with A-level / IB",
+        directUgSub: "You already hold qualifications UK universities accept as they are — apply straight into year 1 through UCAS, no foundation needed.",
+        rIntl: "A-level, IB and similar international curricula are qualifications UK universities accept directly. You apply through UCAS on predicted grades — Oxbridge and the G5 admit through exactly this route — and a foundation only enters the picture if your grades fall short of your target universities.",
         rHs2: "At the end of the second-to-last school year, the foundation is both the only route and the fastest one. While your classmates spend a year finishing school, you complete the foundation in the UK and reach year 1 of a degree ahead of them.",
         rEtc: "Even when school grades are hard to certify, foundations admit on their own assessments — interviews and internal tests — which makes them the widest realistic way in.",
         rFast: "With secondary school (or expected) graduation and the grades to match, you qualify for IYO — which fits your goal of finishing the degree quickly.",
@@ -787,8 +793,8 @@ const DATA_EN = {
         "Among the UK's best for the LLM, with a wide choice of modules that lets you shape the course to your own plans.",
     "UCL 교육대학원(IOE)은 수년 연속 교육학 분야 세계 1위를 지키고 있는 교육학의 최고 명문으로, 교육정책·리더십·TESOL 등 폭넓은 과정을 운영합니다.":
         "UCL's Institute of Education has held the world #1 ranking for education year after year, running a broad range of courses across policy, leadership and TESOL.",
-    "교육학 및 영어교육(TESOL) 분야에서 영국 상위권에 위치하며, 다양한 모듈 선택권을 통해 학생 맞춤형 커리큘럼을 제공합니다.":
-        "Among the UK's best for education and TESOL, with a wide choice of modules that lets you shape the course to your own plans.",
+    "교육학 및 영어교육(TESOL) 분야에서 영국 상위권에 위치합니다. 리즈의 MA TESOL은 교육 경력 2년이 필수라, 경력이 없는 지원자는 같은 학교의 TESOL Studies 트랙으로 지원합니다.":
+        "Among the UK's best for education and TESOL. Note that Leeds's MA TESOL requires two years of teaching experience — applicants without it apply to the TESOL Studies track instead.",
     "박물관학 분야에서 가장 오랜 역사와 최고 수준의 연구 실적을 자랑하며, 전 세계 박물관 및 갤러리와 광범위한 산학연계(Placement)를 맺고 있습니다.":
         "The longest history and strongest research record in museum studies, with placement links to museums and galleries worldwide.",
     "런던의 풍부한 문화예술 인프라를 활용한 예술경영·문화정책 과정으로, 갤러리·극장·문화재단과의 현장 연계가 활발합니다.":
