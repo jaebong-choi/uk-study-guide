@@ -281,6 +281,11 @@ const I18N = {
         filterAll: '전체',
         filterOwn: '대학 자체 파운데이션',
         filterPrivate: '사설 기관 온캠퍼스',
+        filterExt: '사설 파운데이션으로 지원 가능',
+        extNo: '사설 파운데이션 불가',
+        extLimited: '사설 파운데이션 제한',
+        extLabel: '캠퍼스 밖 파운데이션',
+        extHelp: '캠퍼스 밖 사설 파운데이션(Kings · CATS · Kaplan 런던 등)을 마치고 UCAS로 지원하는 경우입니다. 표시가 붙은 학교만 제한이 있고, 나머지는 과목 내용과 성적을 보고 개별 심사합니다.',
         filterIyo: 'IYO 운영',
         filterFnd: '파운데이션 운영',
         filterDirect: 'A-level · IB 전형',
@@ -581,6 +586,11 @@ const I18N = {
         filterAll: "All",
         filterOwn: "University-run foundation",
         filterPrivate: "Provider centre on campus",
+        filterExt: "Open to off-campus foundations",
+        extNo: "Off-campus foundation not accepted",
+        extLimited: "Off-campus foundation restricted",
+        extLabel: "Foundations taken elsewhere",
+        extHelp: "This covers finishing an off-campus foundation (Kings, CATS, Kaplan London and the like) and applying through UCAS. Only the flagged universities restrict it; the rest assess the syllabus and grades case by case.",
         filterIyo: "Runs IYO",
         filterFnd: "Runs a foundation",
         filterDirect: "A-level / IB entry",
@@ -942,8 +952,8 @@ const DATA_EN = {
     "아스턴 · 러프버러 · 리딩 · 사우샘프턴 · 런던 소재 다수": "Aston · Loughborough · Reading · Southampton and several London universities",
     "맨체스터 · 뉴캐슬 · 엑서터 · 랭커스터 · 시티 세인트조지스": "Manchester · Newcastle · Exeter · Lancaster · City St George's",
     "성적에 맞춰 중상위권 대학에 오픈 초이스로 지원": "Open-choice applications to mid- and upper-tier universities on your results",
-    "옥스퍼드 · 케임브리지 · 임페리얼 · LSE · 로열수의과대학처럼 파운데이션을 두지 않는 학교":
-        "For universities with no foundation of their own — Oxford, Cambridge, Imperial, LSE, the Royal Veterinary College",
+    "옥스퍼드 · 케임브리지 · 임페리얼 · LSE처럼 파운데이션을 두지 않거나 거의 받지 않는 학교":
+        "For Oxford, Cambridge, Imperial and LSE — universities that run no foundation of their own, or barely accept one",
 
     /* --- 학부 우세 전공 --- */
     "저널리즘·미디어": "Journalism and media", "부동산학": "Real estate", "식품과학": "Food science",
@@ -958,6 +968,24 @@ const DATA_EN = {
     "미디어·저널리즘": "Media and journalism", "항공운항학": "Aviation", "패션디자인": "Fashion design",
     "게임개발": "Games development", "고고학": "Archaeology", "범죄학": "Criminology",
     "우주과학·천문학": "Space science and astronomy", "파인아트": "Fine art",
+
+    /* --- 캠퍼스 밖 파운데이션 인정 여부 (학교 공식 안내 확인분) --- */
+    "UCL UPCSE와 워릭 IFP 두 과정만 받습니다. 사설 기관 파운데이션으로는 지원할 수 없습니다.":
+        "Only two are accepted: UCL's UPCSE and the Warwick IFP. An independent provider's foundation will not do.",
+    "파운데이션 내용이 A-level과 같은 수준임을 증명해야 해서 사실상 지원이 어렵습니다. 대학도 A-level·IB를 권합니다.":
+        "You would have to show the foundation covers the same ground as the required A-levels, which makes it a hard route in practice. Oxford itself points applicants to A-levels or the IB.",
+    "인정 파운데이션 목록을 공개하지 않습니다. A-level·IB가 사실상 유일한 경로입니다.":
+        "Cambridge publishes no list of accepted foundations. A-levels or the IB are the route in practice.",
+    "영국에서 이수한 파운데이션만 인정하고, 실제 합격 사례는 런던대 IFP·UCL·KCL·워릭 같은 대학 운영 과정이 대부분입니다. 수학이 필요한 전공은 A-level 수학 범위를 다뤘는지 봅니다.":
+        "Only foundations taken in the UK count, and admitted applicants have mostly come through university-run courses — the University of London IFP, UCL, King's, Warwick. Courses needing maths are checked against the A-level maths syllabus.",
+    "영국에서 이수한 파운데이션을 과목 내용으로 개별 심사합니다. 다만 다른 대학의 통합형(Year 0· Integrated Foundation)과 영국 밖 파운데이션은 받지 않습니다.":
+        "Foundations taken in the UK are assessed individually on their syllabus. Integrated foundations at other universities (Year 0) and foundations taken outside the UK are not accepted.",
+    "다른 영국 대학 파운데이션을 학위 지원 자격으로 인정합니다. 그 자격이 있으면 자체 IFP에는 지원할 수 없습니다.":
+        "A foundation from another UK university counts as a qualification for degree entry — which also means holders cannot apply to St Andrews' own IFP.",
+    "인정 기관 명단을 공개합니다. CATS·Kings·Kaplan·EF·NCUK·David Game 등 50곳이 넘고, 이공계는 대체로 65% 이상을 요구합니다.":
+        "Exeter publishes its list of accepted providers — over fifty of them, including CATS, Kings, Kaplan, EF, NCUK and David Game. Science and engineering courses generally ask for 65% or above.",
+    "수의학은 A-level 생물·화학을 요구합니다. 그 조건을 갖추기 어려운 국제학생을 위해 대학이 통합 파운데이션이어를 따로 열었고, 수료하면 5년제 BVetMed 1학년으로 올라갑니다.":
+        "Veterinary medicine requires A-level biology and chemistry. For international students whose school system makes that impossible, the RVC opened its own integrated foundation year, which leads straight into year 1 of the five-year BVetMed.",
 
     /* --- 학부 대학 노트 --- */
     "국제학생 파운데이션 미운영. A-level·IB 등 인정 고교 과정 성적으로 지원하는 최상위 이공계 명문입니다.":
