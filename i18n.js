@@ -80,8 +80,6 @@ const I18N = {
 
         /* ---------- 공식 정보 보드 ---------- */
         boardTitle: '영국 유학 공식 정보',
-        boardSubPg: '석사 진학 준비에 꼭 필요한 공식 채널만 모았습니다. 입학요건과 비자 규정은 항상 공식 출처 기준이 우선입니다.',
-        boardSubUg: '학부 진학 준비에 꼭 필요한 공식 채널만 모았습니다. 입학요건과 비자 규정은 항상 공식 출처 기준이 우선입니다.',
         boardBtn: '영국 정부 공식 유학 안내 (Study UK)',
 
         /* ---------- 유학 정보 글 (허브 guide/uk-info-*) ----------
@@ -364,8 +362,6 @@ const I18N = {
 
         /* ---------- 공식 정보 보드 ---------- */
         boardTitle: "Official information",
-        boardSubPg: "The official channels you will need for a master's application. Entry requirements and visa rules always follow the official source.",
-        boardSubUg: "The official channels you will need for an undergraduate application. Entry requirements and visa rules always follow the official source.",
         boardBtn: "Study UK — the official guide to studying in the UK",
 
         /* ---------- 유학 정보 글 (허브 guide/uk-info-*) ---------- */
