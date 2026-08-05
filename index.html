@@ -290,6 +290,41 @@
         html[data-theme="light"] footer.bg-\[\#0b0b0c\] .text-gray-500,
         html[data-theme="light"] footer.bg-\[\#0b0b0c\] .text-gray-600 { color:#6e6e73 !important; }
         html[data-theme="light"] .border-gray-900 { border-color:#d2d2d7 !important; }
+
+        /* ---------------------------------------------------------
+         * 결과 섹션 — 다크 기본, 라이트에서만 밝게
+         * bg-white로 고정돼 있어 다크모드에서 본문만 흰 판으로 남았다
+         * (CA에서 먼저 같은 방식으로 고쳤다, 2026-08-05).
+         * ⚠ 새 섹션에 bg-white / bg-paper를 고정으로 쓰지 말 것.
+         * --------------------------------------------------------- */
+        #result-section { background-color:#0b0b0c !important; color:#f5f5f7 !important; }
+        #result-section .bg-white, #result-section .bg-paper { background-color:#1d1d1f !important; }
+        #result-section .hover\:bg-gray-50:hover { background-color:#2d2d2f !important; }
+        #result-section .text-ink2, #result-section .text-ink { color:#f5f5f7 !important; }
+        #result-section .text-gray-900, #result-section .text-gray-800,
+        #result-section .text-gray-700, #result-section .text-gray-600 { color:#d1d1d6 !important; }
+        #result-section .text-gray-500, #result-section .text-gray-400 { color:#a1a1a6 !important; }
+        #result-section .border-gray-100, #result-section .border-gray-200,
+        #result-section .border-gray-300 { border-color:#3a3a3c !important; }
+        #result-section .bg-gray-50, #result-section .bg-gray-100 { background-color:#2d2d2f !important; }
+
+        html[data-theme="light"] #result-section { background-color:#ffffff !important; color:#1d1d1f !important; }
+        html[data-theme="light"] #result-section .bg-white { background-color:#ffffff !important; }
+        html[data-theme="light"] #result-section .bg-paper { background-color:#f5f5f7 !important; }
+        html[data-theme="light"] #result-section .hover\:bg-gray-50:hover { background-color:#f9fafb !important; }
+        html[data-theme="light"] #result-section .text-ink2 { color:#1d1d1f !important; }
+        html[data-theme="light"] #result-section .text-ink { color:#000000 !important; }
+        html[data-theme="light"] #result-section .text-gray-900 { color:#111827 !important; }
+        html[data-theme="light"] #result-section .text-gray-800 { color:#1f2937 !important; }
+        html[data-theme="light"] #result-section .text-gray-700 { color:#374151 !important; }
+        html[data-theme="light"] #result-section .text-gray-600 { color:#4b5563 !important; }
+        html[data-theme="light"] #result-section .text-gray-500 { color:#6b7280 !important; }
+        html[data-theme="light"] #result-section .text-gray-400 { color:#9ca3af !important; }
+        html[data-theme="light"] #result-section .border-gray-100 { border-color:#f3f4f6 !important; }
+        html[data-theme="light"] #result-section .border-gray-200 { border-color:#e5e7eb !important; }
+        html[data-theme="light"] #result-section .border-gray-300 { border-color:#d1d5db !important; }
+        html[data-theme="light"] #result-section .bg-gray-50 { background-color:#f9fafb !important; }
+        html[data-theme="light"] #result-section .bg-gray-100 { background-color:#f3f4f6 !important; }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col">
