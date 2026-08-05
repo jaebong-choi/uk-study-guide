@@ -2005,7 +2005,8 @@ const majorCategories = {
                 return `<span class="route-badge bg-gold text-black mb-4 self-start">${label}</span>`;
             };
             const ring = k => (rec === k || rec === 'both' && (k === 'fnd' || k === 'iyo')) ? 'ring-2 ring-gold' : '';
-            const recChip = k => (rec === k || rec === 'both' && (k === 'fnd' || k === 'iyo')) ? `<span class="route-badge bg-gold text-black mb-4">${t('recChip')}</span>` : `<span class="route-badge bg-gray-100 text-gray-500 mb-4">${t('infoChip')}</span>`;
+            // self-start가 없으면 flex-col 카드에서 배지가 카드 폭 전체로 늘어난다 (파운데이션 종류 카드와 맞춘다)
+            const recChip = k => (rec === k || rec === 'both' && (k === 'fnd' || k === 'iyo')) ? `<span class="route-badge bg-gold text-black mb-4 self-start">${t('recChip')}</span>` : `<span class="route-badge bg-gray-100 text-gray-500 mb-4 self-start">${t('infoChip')}</span>`;
 
             let html = `
                 <div class="photo-header pt-24 pb-16 px-4" style="background-image:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.88)),url('assets/img/quad-sunset.jpg')">
