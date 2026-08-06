@@ -325,6 +325,49 @@
         html[data-theme="light"] #result-section .border-gray-300 { border-color:#d1d5db !important; }
         html[data-theme="light"] #result-section .bg-gray-50 { background-color:#f9fafb !important; }
         html[data-theme="light"] #result-section .bg-gray-100 { background-color:#f3f4f6 !important; }
+
+        /* ---------------------------------------------------------
+         * 홈 하단(#home-extra)·학교 모달(#uni-modal) — 다크 기본, 라이트에서만 밝게
+         * 결과 섹션과 같은 방식(위 블록). bg-white 고정이라 다크에서 흰 판으로 남던 곳.
+         * royal(#004AAD)은 어두운 배경에서 안 읽혀 밝은 톤으로 바꾼다.
+         * --------------------------------------------------------- */
+        #home-extra { background-color:#0b0b0c !important; color:#f5f5f7 !important; }
+        #home-extra .text-black, #home-extra .text-ink2 { color:#f5f5f7 !important; }
+        #home-extra .text-gray-600, #home-extra .text-gray-700 { color:#d1d1d6 !important; }
+        #home-extra .bg-paper { background-color:#1d1d1f !important; }
+        #home-extra .bg-blue-50 { background-color:#17273f !important; }
+        #home-extra .text-royal { color:#7fb0f0 !important; }
+        #home-extra button.bg-white { background-color:#1d1d1f !important; color:#f5f5f7 !important; border-color:#3a3a3c !important; }
+        #home-extra button.hover\:bg-gray-50:hover { background-color:#2d2d2f !important; }
+        #uni-modal .bg-white { background-color:#1d1d1f !important; }
+        #uni-modal .bg-paper, #uni-modal .bg-gray-50 { background-color:#2d2d2f !important; }
+        #uni-modal .text-black, #uni-modal .text-ink2 { color:#f5f5f7 !important; }
+        #uni-modal .text-gray-700 { color:#d1d1d6 !important; }
+        #uni-modal .text-mute { color:#a1a1a6 !important; }
+        #uni-modal .info-badge { background:#2d2d2f; color:#d1d1d6; }
+        #uni-modal .bg-\[\#EAFFD0\] { background-color:#223311 !important; }
+        #uni-modal .text-\[\#3c6b00\] { color:#b6e388 !important; }
+
+        html[data-theme="light"] #home-extra { background-color:#ffffff !important; color:#1d1d1f !important; }
+        html[data-theme="light"] #home-extra .text-black { color:#000000 !important; }
+        html[data-theme="light"] #home-extra .text-ink2 { color:#1d1d1f !important; }
+        html[data-theme="light"] #home-extra .text-gray-600 { color:#4b5563 !important; }
+        html[data-theme="light"] #home-extra .text-gray-700 { color:#374151 !important; }
+        html[data-theme="light"] #home-extra .bg-paper { background-color:#f5f5f7 !important; }
+        html[data-theme="light"] #home-extra .bg-blue-50 { background-color:#eff6ff !important; }
+        html[data-theme="light"] #home-extra .text-royal { color:#004AAD !important; }
+        html[data-theme="light"] #home-extra button.bg-white { background-color:#ffffff !important; color:#1d1d1f !important; border-color:#d1d5db !important; }
+        html[data-theme="light"] #home-extra button.hover\:bg-gray-50:hover { background-color:#f9fafb !important; }
+        html[data-theme="light"] #uni-modal .bg-white { background-color:#ffffff !important; }
+        html[data-theme="light"] #uni-modal .bg-paper { background-color:#f5f5f7 !important; }
+        html[data-theme="light"] #uni-modal .bg-gray-50 { background-color:#f9fafb !important; }
+        html[data-theme="light"] #uni-modal .text-black { color:#000000 !important; }
+        html[data-theme="light"] #uni-modal .text-ink2 { color:#1d1d1f !important; }
+        html[data-theme="light"] #uni-modal .text-gray-700 { color:#374151 !important; }
+        html[data-theme="light"] #uni-modal .text-mute { color:#86868b !important; }
+        html[data-theme="light"] #uni-modal .info-badge { background:#f5f5f7; color:#3a3a3c; }
+        html[data-theme="light"] #uni-modal .bg-\[\#EAFFD0\] { background-color:#EAFFD0 !important; }
+        html[data-theme="light"] #uni-modal .text-\[\#3c6b00\] { color:#3c6b00 !important; }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col">
